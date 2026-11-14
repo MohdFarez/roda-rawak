@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pilih Nama &amp; Roda Warna</title>
+<style>
+:root{
+  --bg:#0b1020;--card:#141a2e;--card2:#1b2340;--line:#28315a;--text:#e9edf9;--muted:#8d97bd;
+  --accent:#ffbe0b;--accent2:#fb5607;--r:16px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --stage:min(100%,56vh,540px);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;font-family:var(--font);color:var(--text);
+  background:radial-gradient(1100px 700px at 28% 18%,#1d2858 0%,rgba(11,16,32,0) 60%),
+             radial-gradient(900px 600px at 92% 92%,#2a1640 0%,rgba(11,16,32,0) 55%),var(--bg);background-attachment:fixed}
+button,input,select,textarea{font:inherit;color:inherit}
+
+/* ---------- header ---------- */
+header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;padding:14px 22px}
+.brand{font-weight:800;font-size:20px;letter-spacing:.2px}
+.tools{display:flex;gap:8px;justify-self:end}
+.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:18px;display:grid;place-items:center}
+.icon-btn:hover{background:var(--card2)}
+.spin-both{font-size:16px;padding:11px 26px;border-radius:999px;box-shadow:0 8px 24px rgba(251,86,7,.3)}
+
+/* ---------- buttons & form ---------- */
+.btn{border:1px solid var(--line);background:var(--card2);padding:8px 12px;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer;transition:.15s}
+.btn:hover{border-color:#3d4a82;background:#222b4d}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#1b1205;border:0;font-weight:800}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.grow{flex:1}
+.act{min-width:210px;font-size:16px;padding:11px 22px;border-radius:999px}
+.link{background:none;border:0;color:var(--muted);cursor:pointer;font-size:13px;text-decoration:underline;padding:0}
+.link:hover{color:var(--text)}
+.card{background:rgba(20,26,46,.86);border:1px solid var(--line);border-radius:var(--r);padding:16px;backdrop-filter:blur(6px)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px}
+.card-head h3{margin:0;font-size:16px}
+.badge{font-size:12px;font-weight:700;color:var(--muted);background:var(--card2);border:1px solid var(--line);padding:3px 10px;border-radius:999px;white-space:nowrap}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+textarea{width:100%;min-height:200px;max-height:45vh;resize:vertical;background:#0d1328;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;line-height:1.6;outline:none}
+textarea:focus{border-color:var(--accent)}
+textarea[readonly]{opacity:.6}
+.field{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--muted);margin-bottom:12px}
+.field b{color:var(--text)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+select{background:#0d1328;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.color-in{width:42px;height:38px;padding:2px;border:1px solid var(--line);border-radius:10px;background:var(--card2);cursor:pointer}
+kbd{background:var(--card2);border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:1px 6px;font-size:12px;font-family:inherit}
+.hidden{display:none!important}
+
+/* ---------- layout ---------- */
+main{display:grid;grid-template-columns:1fr 1fr;gap:28px;padding:6px 22px 10px;align-items:start}
+.col{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
+.col-head{display:flex;align-items:center;gap:10px}
+.col-head h2{margin:0;font-size:19px}
+.editor{width:100%;max-width:560px}
+.last{min-height:24px;font-size:15px;color:var(--muted);text-align:center;margin-top:-4px}
+.last b{color:var(--text)}
+.last .chip{display:inline-block;width:14px;height:14px;border-radius:4px;vertical-align:-2px;margin:0 6px 0 6px;border:1px solid rgba(255,255,255,.3)}
+.bottom{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:16px;padding:8px 22px 28px}
+.hint{margin:12px 0 0;color:var(--muted);font-size:13px;line-height:1.7}
+
+/* ---------- name picker (slot reel) ---------- */
+.reel{position:relative;width:var(--stage);aspect-ratio:1/1;margin-top:14px;border-radius:26px;overflow:hidden;cursor:pointer;
+  background:linear-gradient(180deg,#141d3d,#0c1228);border:1px solid var(--line);
+  box-shadow:0 22px 40px rgba(0,0,0,.5),inset 0 0 0 6px rgba(255,255,255,.035);
+  --row:80px;--band:rgba(255,255,255,.07)}
+body.spinning .reel{cursor:progress}
+.reel .band{position:absolute;left:16px;right:16px;top:calc(var(--row)*2);height:var(--row);border-radius:18px;
+  background:var(--band);border:3px solid #fff;transition:background .35s,box-shadow .35s;z-index:0}
+.reel.has-win .band{box-shadow:0 0 40px var(--band)}
+.reel-view{position:absolute;inset:0;z-index:1;
+  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.06) 0%,rgba(0,0,0,.5) 24%,#000 40%,#000 60%,rgba(0,0,0,.5) 76%,rgba(0,0,0,.06) 100%);
+          mask-image:linear-gradient(180deg,rgba(0,0,0,.06) 0%,rgba(0,0,0,.5) 24%,#000 40%,#000 60%,rgba(0,0,0,.5) 76%,rgba(0,0,0,.06) 100%)}
+.strip{will-change:transform}
+.row{display:block;height:var(--row);line-height:var(--row);text-align:center;padding:0 48px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-weight:800;font-size:calc(var(--row)*.4);color:#fff}
+.row::before{content:"";display:inline-block;width:.42em;height:.42em;border-radius:50%;background:var(--c,transparent);margin-right:.4em;vertical-align:.06em}
+.row.q::before,.row.hit::before{display:none}
+.row.q{color:var(--muted)}
+.row.empty{font-size:calc(var(--row)*.26);font-weight:600}
+.row.win{animation:winpop .55s cubic-bezier(.2,1.6,.4,1)}
+@keyframes winpop{0%{transform:scale(.75)}100%{transform:scale(1)}}
+.reel .arrow{position:absolute;top:calc(var(--row)*2.5);z-index:2;width:0;height:0;transform:translateY(-50%);
+  border-top:15px solid transparent;border-bottom:15px solid transparent;filter:drop-shadow(0 3px 4px rgba(0,0,0,.5))}
+.reel .arrow.l{left:0;border-left:22px solid #fff}
+.reel .arrow.r{right:0;border-right:22px solid #fff}
+
+/* ---------- colour wheel ---------- */
+.wheel-wrap{position:relative;width:var(--stage);aspect-ratio:1/1;margin-top:14px;container-type:inline-size}
+.wheel-wrap canvas{display:block;width:100%;height:100%;border-radius:50%;cursor:pointer;filter:drop-shadow(0 22px 40px rgba(0,0,0,.5))}
+body.spinning .wheel-wrap canvas{cursor:progress}
+.pointer{position:absolute;top:-18px;left:50%;width:44px;height:52px;margin-left:-22px;z-index:3;transform-origin:22px 20px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));pointer-events:none}
+.pointer svg{width:100%;height:100%;display:block}
+.pointer.flick{animation:flick .14s ease-out}
+@keyframes flick{0%{transform:rotate(0)}35%{transform:rotate(-16deg)}100%{transform:rotate(0)}}
+.hub{position:absolute;left:50%;top:50%;width:21%;aspect-ratio:1/1;transform:translate(-50%,-50%);border-radius:50%;border:5px solid #fff;padding:0;
+  background:radial-gradient(circle at 35% 30%,#33407a,#0e1430 75%);color:#fff;font-weight:800;letter-spacing:.08em;
+  font-size:13px;font-size:clamp(9px,3.1cqi,20px);cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.45);transition:transform .15s}
+.hub:hover:not(:disabled){transform:translate(-50%,-50%) scale(1.06)}
+.hub:disabled{cursor:progress}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;max-height:200px;overflow:auto;padding:2px}
+.sw{border:0;background:none;padding:0;cursor:pointer;display:flex;flex-direction:column;gap:4px;align-items:stretch}
+.sw .chip{height:34px;border-radius:9px;background:var(--c);border:1px solid rgba(255,255,255,.12);transition:transform .15s}
+.sw:hover .chip{transform:scale(1.06)}
+.sw .hex{font:11px/1 var(--mono);color:var(--muted);text-align:center}
+
+/* ---------- history ---------- */
+.history ol{list-style:none;margin:0;padding:0;max-height:260px;overflow:auto;display:flex;flex-direction:column;gap:6px}
+.history li{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:10px;padding:8px 10px;font-size:14px}
+.history li .num{color:var(--muted);font-size:12px;min-width:22px;text-align:right}
+.history li .dot{width:14px;height:14px;border-radius:4px;flex:none;border:1px solid rgba(255,255,255,.25)}
+.history li .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.history li .lbl .hx{font-family:var(--mono);font-weight:500;color:var(--muted)}
+.history li .time{color:var(--muted);font-size:12px}
+.history li.empty{background:none;color:var(--muted);justify-content:center}
+.history li.copyable{cursor:pointer}
+.history li.copyable:hover{background:#222b4d}
+
+/* ---------- presentation mode ---------- */
+body.presenting{--stage:min(100%,74vh,900px)}
+body.presenting .editor,body.presenting .bottom{display:none}
+
+/* ---------- winner modal ---------- */
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:rgba(5,8,20,.72);backdrop-filter:blur(5px);animation:fade .2s}
+.modal-card{width:min(100%,520px);background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:pop .4s cubic-bezier(.2,1.4,.4,1)}
+.modal-top{padding:30px 24px 34px;text-align:center}
+.modal-top.big{padding:54px 24px 58px}
+.kicker{margin:0 0 8px;font-size:14px;font-weight:700;opacity:.85;letter-spacing:.02em}
+.modal-top h2{margin:0;font-size:clamp(30px,7vw,52px);line-height:1.1;word-break:break-word}
+.sub{margin:12px 0 0;font-size:17px;font-weight:600;opacity:.92}
+.modal-body{padding:18px 22px 4px}
+.code-row{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:10px;padding:7px 8px 7px 12px;margin-bottom:8px}
+.code-row span{width:38px;color:var(--muted);font-size:12px;font-weight:700}
+.code-row code{flex:1;font:15px var(--mono)}
+.code-row .btn{padding:6px 10px;font-size:13px}
+.approx{margin:6px 0 4px;color:var(--muted);font-size:14px}
+.approx b{color:var(--text)}
+.modal-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end;padding:16px 22px 22px}
+@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes fade{from{opacity:0}}
+
+#confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:60}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#fff;color:#111;font-weight:600;font-size:14px;
+  padding:10px 16px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transition:.25s;z-index:70;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:860px){
+  :root{--stage:min(100%,64vh)}
+  main{grid-template-columns:1fr;gap:34px;padding:6px 14px 10px}
+  .bottom{grid-template-columns:1fr;padding:8px 14px 28px}
+  .reel{aspect-ratio:4/3}
+}
+@media (max-width:560px){
+  header{grid-template-columns:1fr auto}
+  .spin-both{grid-column:1/-1;grid-row:2;width:100%}
+  .two{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">🎡 Pilih Rawak</div>
+  <button class="btn primary spin-both" id="bothBtn" data-lock title="Ctrl + Enter">🎲 Pilih Dua-dua</button>
+  <div class="tools">
+    <button class="icon-btn" id="soundBtn" title="Bunyi">🔊</button>
+    <button class="icon-btn" id="fsBtn" title="Skrin penuh / mod persembahan">⛶</button>
+  </div>
+</header>
+
+<main>
+  <!-- ===== NAMES (no wheel — slot reel) ===== -->
+  <section class="col">
+    <div class="col-head"><h2>👥 Pilih Nama</h2><span class="badge" id="nameCount">0 nama</span></div>
+    <div class="reel" id="reel" title="Klik untuk pilih nama">
+      <div class="band"></div>
+      <div class="reel-view"><div class="strip"></div></div>
+      <span class="arrow l"></span><span class="arrow r"></span>
+    </div>
+    <button class="btn primary act" id="nameBtn" data-lock>🎯 Pilih Nama</button>
+    <div class="last" id="lastName"></div>
+    <div class="card editor">
+      <div class="btn-row">
+        <button class="btn" id="shuffleBtn" data-lock>🔀 Kocok</button>
+        <button class="btn" id="sortBtn" data-lock>🔤 Susun A-Z</button>
+        <button class="btn" id="clearBtn" data-lock>🗑️ Kosongkan</button>
+      </div>
+      <textarea id="namesInput" spellcheck="false" placeholder="Taip satu nama satu baris…&#10;Boleh tampal terus dari Excel."></textarea>
+    </div>
+  </section>
+
+  <!-- ===== COLOURS (wheel) ===== -->
+  <section class="col">
+    <div class="col-head"><h2>🎨 Roda Warna</h2><span class="badge" id="colorCount">0 warna</span></div>
+    <div class="wheel-wrap" id="wheelWrap">
+      <div class="pointer">
+        <svg viewBox="0 0 44 52" aria-hidden="true">
+          <path d="M22 50 L4 14 A20 20 0 0 1 40 14 Z" fill="#ffffff"/>
+          <circle cx="22" cy="17" r="6" fill="#fb5607"/>
+        </svg>
+      </div>
+      <canvas aria-label="Roda warna — klik untuk pusing"></canvas>
+      <button class="hub" data-lock>PUSING</button>
+    </div>
+    <button class="btn primary act" id="colorBtn" data-lock>🎨 Pusing Warna</button>
+    <div class="last" id="lastColor"></div>
+    <div class="card editor">
+      <div class="two">
+        <label class="field"><span>Gaya warna</span>
+          <select id="colorStyle" data-lock>
+            <option value="vivid">Terang (vivid)</option>
+            <option value="pastel">Pastel</option>
+            <option value="dark">Gelap</option>
+            <option value="any">Rawak penuh</option>
+          </select>
+        </label>
+        <label class="field"><span>Bilangan warna: <b id="colorNumLabel">12</b></span>
+          <input type="range" id="colorNum" min="2" max="24" value="12" data-lock>
+        </label>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary grow" id="regenBtn" data-lock>🎲 Jana warna baru</button>
+        <input type="color" class="color-in" id="addColor" value="#00b4d8" title="Pilih warna sendiri">
+        <button class="btn" id="addColorBtn" data-lock>➕ Tambah</button>
+      </div>
+      <div class="swatches" id="colorList" title="Klik warna untuk salin kod"></div>
+    </div>
+  </section>
+</main>
+
+<section class="bottom">
+  <div class="card">
+    <label class="field" style="margin:0"><span>Tempoh animasi: <b><span id="durLabel">5</span> saat</b></span>
+      <input type="range" id="duration" min="2" max="15" value="5">
+    </label>
+    <p class="hint">
+      <b>🎯 Pilih Nama</b>: pilih satu nama sahaja.<br>
+      <b>🎨 Pusing Warna</b>: pusing roda warna sahaja.<br>
+      <b>🎲 Pilih Dua-dua</b>: nama + warna serentak (<kbd>Ctrl</kbd> + <kbd>Enter</kbd>).
+    </p>
+  </div>
+  <div class="card history">
+    <div class="card-head"><h3>Keputusan</h3><button class="link" id="clearHistBtn">Padam sejarah</button></div>
+    <ol id="historyList"></ol>
+  </div>
+</section>
+
+<div class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="modal-card">
+    <div class="modal-top" id="modalTop">
+      <p class="kicker" id="winKicker"></p>
+      <h2 id="winTitle"></h2>
+      <p class="sub hidden" id="winSub"></p>
+    </div>
+    <div class="modal-body hidden" id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="btn" id="rmNameBtn">Buang nama ni</button>
+      <button class="btn" id="rmColorBtn">Buang warna ni</button>
+      <button class="btn primary" id="closeBtn">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<canvas id="confetti"></canvas>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ================= constants & helpers ================= */
+const $ = s => document.querySelector(s);
+const TAU = Math.PI * 2;
+const POINTER = -Math.PI / 2;            // wheel pointer sits at the top
+const STORE = 'pilihRawak.v1';
+const FONT = 'system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif';
+const PALETTE = ['#ef476f','#ffd166','#06d6a0','#118ab2','#8338ec','#ff9f1c','#3a86ff','#2ec4b6'];
+const HEX_RE = /^#[0-9a-f]{6}$/i;
+const DEFAULT_NAMES = ['Ali','Siti','Mei Ling','Ravi','Aisyah','Farid','Nurul','Jason'];
+
+// Fair randomness (crypto) with Math.random fallback
+const rand = (() => {
+  const c = window.crypto;
+  if (c && c.getRandomValues) {
+    const buf = new Uint32Array(1);
+    return () => { c.getRandomValues(buf); return buf[0] / 4294967296; };
+  }
+  return Math.random;
+})();
+const randInt = n => Math.floor(rand() * n);
+const mod = (a, m) => ((a % m) + m) % m;
+const ease = t => 1 - Math.pow(1 - t, 3);
+
+/* ================= colour utils ================= */
+function hslToHex(h, s, l) {
+  s /= 100; l /= 100;
+  const k = n => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return '#' + [f(0), f(8), f(4)].map(x => Math.round(x * 255).toString(16).padStart(2, '0')).join('');
+}
+function hexToRgb(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0; const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+  }
+  return [Math.round(h), Math.round(s * 100), Math.round(l * 100)];
+}
+function inkFor(hex) {
+  const [r, g, b] = hexToRgb(hex);
+  return (r * 299 + g * 587 + b * 114) / 1000 >= 150 ? '#14161f' : '#ffffff';
+}
+function colorName(h, s, l) {          // rough Malay colour name
+  if (l <= 10) return 'Hitam';
+  if (l >= 94) return 'Putih';
+  if (s < 12) return l < 35 ? 'Kelabu Gelap' : l > 70 ? 'Kelabu Cerah' : 'Kelabu';
+  let base;
+  if (h < 12 || h >= 345) base = l > 70 ? 'Merah Jambu' : 'Merah';
+  else if (h < 40) base = l < 40 ? 'Coklat' : 'Oren';
+  else if (h < 65) base = 'Kuning';
+  else if (h < 165) base = 'Hijau';
+  else if (h < 195) base = 'Biru Firus';
+  else if (h < 250) base = 'Biru';
+  else if (h < 285) base = 'Ungu';
+  else base = l > 60 ? 'Merah Jambu' : 'Magenta';
+  if (base === 'Coklat') return base;
+  return base + (l > 72 ? ' Muda' : l < 30 ? ' Tua' : '');
+}
+function genColors(n, style) {
+  if (style === 'any') {
+    return Array.from({ length: n }, () => '#' + Math.floor(rand() * 0x1000000).toString(16).padStart(6, '0'));
+  }
+  const h0 = rand() * 360;                // golden-angle spacing → random but well spread
+  return Array.from({ length: n }, (_, i) => {
+    const h = (h0 + i * 137.508) % 360;
+    let s, l;
+    if (style === 'pastel')    { s = 60 + rand() * 25; l = 76 + rand() * 10; }
+    else if (style === 'dark') { s = 40 + rand() * 40; l = 20 + rand() * 14; }
+    else                       { s = 78 + rand() * 22; l = 46 + rand() * 10; }
+    return hslToHex(h, s, l);
+  });
+}
+function shades(hex) {
+  const [r, g, b] = hexToRgb(hex), [h, s, l] = rgbToHsl(r, g, b);
+  return [hex, hex, hslToHex(h, s, Math.min(92, l + 22)), hslToHex(h, s, Math.max(12, l - 18)), '#ffffff'];
+}
+function segColor(i, n) {
+  let k = i % PALETTE.length;
+  if (n > 1 && i === n - 1 && k === 0) k = PALETTE.length / 2;
+  return PALETTE[k];
+}
+
+/* ================= state ================= */
+const state = {
+  names: [...DEFAULT_NAMES],
+  colors: [],
+  colorStyle: 'vivid',
+  colorNum: 12,
+  duration: 5,
+  sound: true,
+  history: [],                       // {type:'name'|'color'|'combo', name?, nameColor?, color?, t}
+  last: { name: null, color: null }  // name: {label,color} ; color: hex
+};
+function validEntry(e) {
+  if (!e || typeof e.t !== 'number' || !['name', 'color', 'combo'].includes(e.type)) return false;
+  if (e.type !== 'color' && typeof e.name !== 'string') return false;
+  if (e.type === 'name') return HEX_RE.test(e.nameColor);
+  return HEX_RE.test(e.color);
+}
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem(STORE) || 'null');
+    if (!d) return;
+    if (Array.isArray(d.names)) state.names = d.names.filter(x => typeof x === 'string' && x.trim()).slice(0, 2000);
+    if (Array.isArray(d.colors)) state.colors = d.colors.filter(x => HEX_RE.test(x));
+    if (['any','vivid','pastel','dark'].includes(d.colorStyle)) state.colorStyle = d.colorStyle;
+    if (d.colorNum >= 2 && d.colorNum <= 24) state.colorNum = d.colorNum | 0;
+    if (d.duration >= 2 && d.duration <= 15) state.duration = +d.duration;
+    if (typeof d.sound === 'boolean') state.sound = d.sound;
+    if (Array.isArray(d.history)) state.history = d.history.filter(validEntry).slice(0, 150);
+    if (d.last) {
+      if (d.last.name && typeof d.last.name.label === 'string' && HEX_RE.test(d.last.name.color)) state.last.name = d.last.name;
+      if (HEX_RE.test(d.last.color || '')) state.last.color = d.last.color;
+    }
+  } catch (e) { /* storage unavailable — carry on */ }
+}
+function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
+let saveTimer;
+function saveSoon() { clearTimeout(saveTimer); saveTimer = setTimeout(save, 300); }
+
+load();
+if (!state.colors.length) state.colors = genColors(state.colorNum, state.colorStyle);
+
+const nameItems = () => state.names.map((label, i) => ({ label, color: segColor(i, state.names.length) }));
+const colorItems = () => state.colors.map(c => ({ label: c.toUpperCase(), color: c }));
+
+/* ================= sound ================= */
+let actx = null;
+function audio() {
+  try {
+    if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    return actx;
+  } catch (e) { return null; }
+}
+function playTick(hz) {
+  if (!state.sound) return;
+  const a = audio(); if (!a) return;
+  const t = a.currentTime, o = a.createOscillator(), g = a.createGain();
+  o.type = 'square';
+  o.frequency.setValueAtTime(hz, t);
+  o.frequency.exponentialRampToValueAtTime(hz * 0.4, t + 0.03);
+  g.gain.setValueAtTime(0.045, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+  o.connect(g).connect(a.destination);
+  o.start(t); o.stop(t + 0.05);
+}
+function winSound() {
+  if (!state.sound) return;
+  const a = audio(); if (!a) return;
+  [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+    const t = a.currentTime + i * 0.11, o = a.createOscillator(), g = a.createGain();
+    o.type = 'triangle'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.18, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.38);
+    o.connect(g).connect(a.destination);
+    o.start(t); o.stop(t + 0.42);
+  });
+}
+
+/* ================= NAME PICKER — slot reel ================= */
+class Reel {
+  constructor(el) {
+    this.el = el;
+    this.strip = el.querySelector('.strip');
+    this.rows = [];
+    const measure = () => { const h = el.clientHeight; if (h) el.style.setProperty('--row', (h / 5) + 'px'); };
+    if ('ResizeObserver' in window) new ResizeObserver(measure).observe(el);
+    else window.addEventListener('resize', measure);
+    measure();
+  }
+  build(rows) {
+    const frag = document.createDocumentFragment();
+    for (const r of rows) {
+      const d = document.createElement('div');
+      d.className = 'row' + (r.q ? ' q' : '') + (r.empty ? ' empty' : '');
+      d.textContent = r.label;
+      if (r.color) d.style.setProperty('--c', r.color);
+      frag.appendChild(d);
+    }
+    this.strip.replaceChildren(frag);
+    this.rows = rows;
+  }
+  setPos(p) { this.strip.style.transform = `translateY(calc(var(--row) * ${-p}))`; }
+  markWin(color, animate) {
+    this.el.classList.add('has-win');
+    this.el.style.setProperty('--band', color);
+    const row = this.strip.children[2];
+    if (!row) return;
+    row.classList.add('hit');
+    row.style.color = inkFor(color);
+    if (animate) row.classList.add('win');
+  }
+  pick(n, avoid) {
+    if (n <= 1) return 0;
+    let i, guard = 0;
+    do { i = randInt(n); } while (avoid.includes(i) && ++guard < 25);
+    return i;
+  }
+  // static view: last winner in the middle (if still in the list), otherwise "?"
+  idle() {
+    const items = nameItems(), n = items.length;
+    this.el.classList.remove('has-win');
+    this.el.style.removeProperty('--band');
+    if (!n) {
+      this.build([0,1,2,3,4].map(k => k === 2 ? { label: 'Tambah nama dulu ↓', q: true, empty: true } : { label: '', q: true }));
+      this.setPos(0);
+      return;
+    }
+    const last = state.last.name;
+    const c = last ? items.findIndex(it => it.label === last.label) : -1;
+    const rows = [];
+    for (let k = -2; k <= 2; k++) {
+      if (k === 0 && c < 0) { rows.push({ label: '?', q: true }); continue; }
+      const i = mod((c < 0 ? 0 : c) + k, n);
+      rows.push({ ...items[i], i });
+    }
+    this.build(rows); this.setPos(0);
+    if (c >= 0) this.markWin(items[c].color, false);
+  }
+  spin(ms) {
+    return new Promise(resolve => {
+      const items = nameItems(), n = items.length;
+      if (!n) return resolve(null);
+      this.el.classList.remove('has-win');
+      this.el.style.removeProperty('--band');
+      const idx = randInt(n);                                   // winner chosen fairly up-front
+      const T = Math.max(24, Math.round(ms / 1000 * 11)) + randInt(5);
+      const rows = this.rows.slice(0, 5).map(r => ({ ...r }));   // what is visible now → seamless start
+      let prev = rows[4].i ?? -1;
+      for (let k = 5; k <= T + 4; k++) {
+        let i;
+        if (k === T + 2) i = idx;
+        else if (k === T + 1) i = this.pick(n, [prev, idx]);
+        else if (k === T + 3) i = this.pick(n, [idx]);
+        else i = this.pick(n, [prev]);
+        rows.push({ ...items[i], i });
+        prev = i;
+      }
+      this.build(rows); this.setPos(0);
+      let t0 = null, lastRow = 0;
+      const step = now => {
+        if (t0 === null) t0 = now;
+        const t = Math.min(1, (now - t0) / ms);
+        const p = T * ease(t);
+        this.setPos(p);
+        const s = Math.floor(p + 0.5);
+        if (s !== lastRow) { lastRow = s; playTick(1500); }
+        if (t < 1) { requestAnimationFrame(step); return; }
+        this.build(rows.slice(T, T + 5)); this.setPos(0);      // collapse the long strip
+        this.markWin(items[idx].color, true);
+        resolve({ idx, item: items[idx] });
+      };
+      requestAnimationFrame(step);
+    });
+  }
+}
+
+/* ================= COLOUR WHEEL ================= */
+class Wheel {
+  constructor(el) {
+    this.canvas = el.querySelector('canvas');
+    this.ctx = this.canvas.getContext('2d');
+    this.pointer = el.querySelector('.pointer');
+    this.rotation = rand() * TAU;
+    this.size = 0; this.dpr = 1;
+    this.cache = new Map(); this.cacheKey = '';
+    const ro = () => this.resize();
+    if ('ResizeObserver' in window) new ResizeObserver(ro).observe(this.canvas);
+    else window.addEventListener('resize', ro);
+  }
+  resize() {
+    const w = this.canvas.getBoundingClientRect().width;
+    if (!w) return;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 3);
+    this.size = w;
+    this.canvas.width = Math.round(w * this.dpr);
+    this.canvas.height = Math.round(w * this.dpr);
+    this.draw();
+  }
+  fit(text, maxW) {
+    const ctx = this.ctx;
+    if (ctx.measureText(text).width <= maxW) return text;
+    let lo = 0, hi = text.length;
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >> 1;
+      if (ctx.measureText(text.slice(0, mid) + '…').width <= maxW) lo = mid; else hi = mid - 1;
+    }
+    return text.slice(0, lo) + '…';
+  }
+  draw() {
+    if (!this.size) return;
+    const ctx = this.ctx, size = this.size;
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    ctx.clearRect(0, 0, size, size);
+    const c = size / 2, r = c - 5;
+    const items = colorItems();
+    if (!items.length) {
+      ctx.beginPath(); ctx.arc(c, c, r, 0, TAU);
+      ctx.fillStyle = '#1f2747'; ctx.fill();
+      ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
+      ctx.fillStyle = '#8d97bd';
+      ctx.font = `600 ${Math.max(14, r * 0.065)}px ${FONT}`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('Jana warna dulu ↓', c, c + r * 0.42);
+      return;
+    }
+    const n = items.length, arc = TAU / n;
+    for (let i = 0; i < n; i++) {
+      const a0 = this.rotation + i * arc;
+      ctx.beginPath(); ctx.moveTo(c, c); ctx.arc(c, c, r, a0, a0 + arc); ctx.closePath();
+      ctx.fillStyle = items[i].color; ctx.fill();
+      if (n > 1) { ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.stroke(); }
+    }
+    const fs = Math.min(r * 0.085, r * 0.75 * arc * 0.6);
+    if (fs >= 7) {
+      ctx.font = `700 ${fs}px ${FONT}`;
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      const maxW = r * 0.66;
+      const key = fs.toFixed(2) + '|' + maxW.toFixed(1);
+      if (key !== this.cacheKey) { this.cacheKey = key; this.cache.clear(); }
+      for (let i = 0; i < n; i++) {
+        const it = items[i];
+        let txt = this.cache.get(it.label);
+        if (txt === undefined) { txt = this.fit(it.label, maxW); this.cache.set(it.label, txt); }
+        ctx.save();
+        ctx.translate(c, c);
+        ctx.rotate(this.rotation + (i + 0.5) * arc);
+        ctx.fillStyle = inkFor(it.color);
+        ctx.fillText(txt, r - fs * 0.8, 0);
+        ctx.restore();
+      }
+    }
+    const g = ctx.createRadialGradient(c, c, r * 0.25, c, c, r);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.86, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.2)');
+    ctx.beginPath(); ctx.arc(c, c, r, 0, TAU); ctx.fillStyle = g; ctx.fill();
+    ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
+  }
+  segAt(n) { return Math.floor(mod(POINTER - this.rotation, TAU) / (TAU / n)) % n; }
+  flick() { const p = this.pointer; p.classList.remove('flick'); void p.offsetWidth; p.classList.add('flick'); }
+  spin(ms) {
+    return new Promise(resolve => {
+      const items = colorItems(), n = items.length;
+      if (!n) return resolve(null);
+      const arc = TAU / n;
+      const idx = randInt(n);                                   // winner chosen fairly up-front
+      const f = 0.12 + rand() * 0.76;                           // land inside the slice, not on a line
+      const target = mod(POINTER - (idx + f) * arc, TAU);
+      const turns = Math.max(3, Math.round(ms / 1000 * 1.1)) + randInt(2);
+      const delta = mod(target - mod(this.rotation, TAU), TAU) + turns * TAU;
+      const start = this.rotation;
+      let t0 = null, last = this.segAt(n);
+      const step = now => {
+        if (t0 === null) t0 = now;
+        const t = Math.min(1, (now - t0) / ms);
+        this.rotation = start + delta * ease(t);
+        this.draw();
+        const s = this.segAt(n);
+        if (s !== last) { last = s; this.flick(); playTick(1000); }
+        if (t < 1) { requestAnimationFrame(step); return; }
+        this.rotation = mod(this.rotation, TAU);
+        this.draw();
+        const w = this.segAt(n);
+        resolve({ idx: w, item: items[w] });
+      };
+      requestAnimationFrame(step);
+    });
+  }
+}
+
+/* ================= elements ================= */
+const reel = new Reel($('#reel'));
+const wheel = new Wheel($('#wheelWrap'));
+const namesInput = $('#namesInput');
+const modal = $('#modal'), rmNameBtn = $('#rmNameBtn'), rmColorBtn = $('#rmColorBtn'), closeBtn = $('#closeBtn');
+const colorStyle = $('#colorStyle'), colorNum = $('#colorNum'), durInput = $('#duration');
+const soundBtn = $('#soundBtn'), fsBtn = $('#fsBtn');
+
+/* ================= actions ================= */
+let busy = false;
+function setBusy(b) {
+  busy = b;
+  document.body.classList.toggle('spinning', b);
+  namesInput.readOnly = b;
+  document.querySelectorAll('[data-lock]').forEach(el => { el.disabled = b; });
+}
+const canStart = () => !busy && modal.classList.contains('hidden');
+const dur = () => state.duration * 1000;
+
+function record(entry) {
+  entry.t = Date.now();
+  state.history.unshift(entry);
+  if (state.history.length > 150) state.history.length = 150;
+  save(); renderHistory();
+}
+function setLastName(item) { state.last.name = { label: item.label, color: item.color }; renderLast(); save(); }
+function setLastColor(hex) { state.last.color = hex; renderLast(); save(); }
+
+function pickName() {
+  if (!canStart()) return;
+  if (!state.names.length) { toast('Tambah sekurang-kurangnya satu nama dulu'); return; }
+  audio(); setBusy(true);
+  reel.spin(dur()).then(rn => {
+    setBusy(false);
+    setLastName(rn.item);
+    record({ type: 'name', name: rn.item.label, nameColor: rn.item.color });
+    winSound(); confetti(PALETTE);
+    showModal('name', rn, null);
+  });
+}
+function spinColor() {
+  if (!canStart()) return;
+  if (!state.colors.length) { toast('Jana warna dulu'); return; }
+  audio(); setBusy(true);
+  wheel.spin(dur()).then(rc => {
+    setBusy(false);
+    setLastColor(rc.item.color);
+    record({ type: 'color', color: rc.item.color });
+    winSound(); confetti(shades(rc.item.color));
+    showModal('color', null, rc);
+  });
+}
+function pickBoth() {
+  if (!canStart()) return;
+  if (!state.names.length) { toast('Tambah sekurang-kurangnya satu nama dulu'); return; }
+  if (!state.colors.length) { toast('Jana warna dulu'); return; }
+  audio(); setBusy(true);
+  const d = dur();
+  Promise.all([
+    reel.spin(d).then(rn => { setLastName(rn.item); return rn; }),
+    wheel.spin(d + 1000)                                       // colour stops 1s after the name
+  ]).then(([rn, rc]) => {
+    setBusy(false);
+    setLastColor(rc.item.color);
+    record({ type: 'combo', name: rn.item.label, color: rc.item.color });
+    winSound(); confetti([...shades(rc.item.color), ...PALETTE.slice(0, 4)]);
+    showModal('combo', rn, rc);
+  });
+}
+
+/* ================= winner modal ================= */
+let pending = null;
+function showModal(type, rn, rc) {
+  pending = { name: rn ? rn.idx : null, color: rc ? rc.idx : null };
+  const bg = rc ? rc.item.color : rn.item.color;
+  const top = $('#modalTop');
+  top.style.background = bg;
+  top.style.color = inkFor(bg);
+  top.classList.toggle('big', type === 'color');
+
+  $('#winKicker').textContent = type === 'name' ? '🎉 Nama terpilih' : type === 'color' ? '🎨 Warna terpilih' : '🎉 Nama & warna terpilih';
+  $('#winTitle').textContent = rn ? rn.item.label : rc.item.label;
+
+  const sub = $('#winSub'), body = $('#modalBody');
+  body.innerHTML = '';
+  if (rc) {
+    const hex = rc.item.color.toUpperCase();
+    const [r, g, b] = hexToRgb(rc.item.color), [h, s, l] = rgbToHsl(r, g, b);
+    sub.textContent = `dapat warna ${hex} · ${colorName(h, s, l)}`;
+    sub.classList.toggle('hidden', type !== 'combo');
+    [['HEX', hex], ['RGB', `rgb(${r}, ${g}, ${b})`], ['HSL', `hsl(${h}, ${s}%, ${l}%)`]].forEach(([k, v]) => {
+      const row = document.createElement('div'); row.className = 'code-row';
+      const sp = document.createElement('span'); sp.textContent = k;
+      const code = document.createElement('code'); code.textContent = v;
+      const btn = document.createElement('button'); btn.className = 'btn'; btn.textContent = 'Salin';
+      btn.onclick = () => copy(v);
+      row.append(sp, code, btn); body.append(row);
+    });
+    if (type === 'color') {
+      const p = document.createElement('p'); p.className = 'approx';
+      const bb = document.createElement('b'); bb.textContent = colorName(h, s, l);
+      p.append('Lebih kurang: ', bb); body.append(p);
+    }
+    body.classList.remove('hidden');
+  } else {
+    sub.classList.add('hidden');
+    body.classList.add('hidden');
+  }
+
+  rmNameBtn.classList.toggle('hidden', !rn);
+  rmNameBtn.disabled = false; rmNameBtn.textContent = 'Buang nama ni';
+  rmColorBtn.classList.toggle('hidden', !rc);
+  rmColorBtn.disabled = false; rmColorBtn.textContent = 'Buang warna ni';
+
+  modal.classList.remove('hidden');
+  closeBtn.focus();
+}
+function closeModal() { modal.classList.add('hidden'); pending = null; }
+
+rmNameBtn.onclick = () => {
+  if (!pending || pending.name === null) return;
+  const [gone] = state.names.splice(pending.name, 1);
+  pending.name = null;
+  state.last.name = null;
+  namesInput.value = state.names.join('\n');
+  updateCounts(); reel.idle(); renderLast(); save();
+  toast(`"${gone}" dibuang dari senarai`);
+  rmNameBtn.disabled = true; rmNameBtn.textContent = '✓ Nama dibuang';
+  if (pending.color === null) closeModal();
+};
+rmColorBtn.onclick = () => {
+  if (!pending || pending.color === null) return;
+  state.colors.splice(pending.color, 1);
+  pending.color = null;
+  renderSwatches(); updateCounts(); wheel.draw(); save();
+  toast('Warna dibuang dari roda');
+  rmColorBtn.disabled = true; rmColorBtn.textContent = '✓ Warna dibuang';
+  if (pending.name === null) closeModal();
+};
+closeBtn.onclick = closeModal;
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+/* ================= confetti ================= */
+const cf = $('#confetti'), cfx = cf.getContext('2d');
+let cfId = 0;
+function confetti(colors) {
+  const id = ++cfId;
+  const d = Math.min(window.devicePixelRatio || 1, 2), W = innerWidth, H = innerHeight;
+  cf.width = W * d; cf.height = H * d; cfx.setTransform(d, 0, 0, d, 0, 0);
+  const parts = [];
+  for (let i = 0; i < 220; i++) {
+    const left = i % 2 === 0;
+    parts.push({
+      x: left ? -10 : W + 10, y: H * 0.85,
+      vx: (left ? 1 : -1) * (3 + rand() * W / 90),
+      vy: -Math.sqrt(2 * 0.32 * H * (0.45 + rand() * 0.5)),
+      w: 7 + rand() * 6, h: 10 + rand() * 8,
+      rot: rand() * TAU, vr: (rand() - 0.5) * 0.35,
+      flip: rand() * TAU, vf: 0.08 + rand() * 0.15,
+      c: colors[randInt(colors.length)]
+    });
+  }
+  const t0 = performance.now();
+  (function frame(now) {
+    if (id !== cfId) return;
+    cfx.clearRect(0, 0, W, H);
+    let alive = 0;
+    for (const p of parts) {
+      p.vy = Math.min(p.vy + 0.32, 4.5);
+      p.vx *= 0.985;
+      p.x += p.vx + Math.sin(p.flip) * 0.6; p.y += p.vy;
+      p.rot += p.vr; p.flip += p.vf;
+      if (p.y > H + 30) continue;
+      alive++;
+      cfx.save();
+      cfx.translate(p.x, p.y); cfx.rotate(p.rot); cfx.scale(1, Math.cos(p.flip));
+      cfx.fillStyle = p.c; cfx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      cfx.restore();
+    }
+    if (alive && now - t0 < 7000) requestAnimationFrame(frame);
+    else cfx.clearRect(0, 0, W, H);
+  })(t0);
+}
+
+/* ================= UI rendering ================= */
+let toastTimer;
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+}
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    ta.remove();
+  }
+  toast(`Disalin: ${text}`);
+}
+function updateCounts() {
+  $('#nameCount').textContent = `${state.names.length} nama`;
+  $('#colorCount').textContent = `${state.colors.length} warna`;
+}
+function renderSwatches() {
+  const el = $('#colorList'); el.innerHTML = '';
+  state.colors.forEach(c => {
+    const hex = c.toUpperCase();
+    const b = document.createElement('button');
+    b.className = 'sw'; b.style.setProperty('--c', c); b.title = `Salin ${hex}`;
+    const chip = document.createElement('span'); chip.className = 'chip';
+    const lbl = document.createElement('span'); lbl.className = 'hex'; lbl.textContent = hex;
+    b.append(chip, lbl);
+    b.onclick = () => copy(hex);
+    el.appendChild(b);
+  });
+}
+function renderHistory() {
+  const list = $('#historyList'); list.innerHTML = '';
+  const h = state.history;
+  if (!h.length) { list.innerHTML = '<li class="empty">Belum ada keputusan</li>'; return; }
+  h.forEach((e, i) => {
+    const li = document.createElement('li');
+    const num = document.createElement('span'); num.className = 'num'; num.textContent = h.length - i;
+    const dot = document.createElement('span'); dot.className = 'dot';
+    dot.style.background = e.type === 'name' ? e.nameColor : e.color;
+    const lbl = document.createElement('span'); lbl.className = 'lbl';
+    if (e.type === 'name') lbl.textContent = '👥 ' + e.name;
+    else {
+      const hx = document.createElement('span'); hx.className = 'hx'; hx.textContent = e.color.toUpperCase();
+      if (e.type === 'color') lbl.append('🎨 ', hx);
+      else lbl.append('🎲 ' + e.name + ' → ', hx);
+      li.className = 'copyable'; li.title = 'Klik untuk salin kod warna';
+      li.onclick = () => copy(e.color.toUpperCase());
+    }
+    const time = document.createElement('span'); time.className = 'time';
+    time.textContent = new Date(e.t).toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit' });
+    li.append(num, dot, lbl, time);
+    list.appendChild(li);
+  });
+}
+function renderLast() {
+  const put = (el, color, label) => {
+    el.innerHTML = '';
+    if (!label) return;
+    const chip = document.createElement('span'); chip.className = 'chip'; chip.style.background = color;
+    const b = document.createElement('b'); b.textContent = label;
+    el.append('Terakhir:', chip, b);
+  };
+  const n = state.last.name, c = state.last.color;
+  put($('#lastName'), n && n.color, n && n.label);
+  put($('#lastColor'), c, c && c.toUpperCase());
+}
+function renderSound() {
+  soundBtn.textContent = state.sound ? '🔊' : '🔇';
+  soundBtn.title = state.sound ? 'Bunyi: hidup' : 'Bunyi: mati';
+}
+
+/* ================= events ================= */
+$('#reel').addEventListener('click', pickName);
+$('#nameBtn').onclick = pickName;
+$('#wheelWrap canvas').addEventListener('click', spinColor);
+$('#wheelWrap .hub').onclick = spinColor;
+$('#colorBtn').onclick = spinColor;
+$('#bothBtn').onclick = pickBoth;
+
+namesInput.addEventListener('input', () => {
+  state.names = namesInput.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  updateCounts(); reel.idle(); saveSoon();
+});
+$('#shuffleBtn').onclick = () => {
+  const a = state.names;
+  for (let i = a.length - 1; i > 0; i--) { const j = randInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; }
+  namesInput.value = a.join('\n'); reel.idle(); save();
+};
+$('#sortBtn').onclick = () => {
+  state.names.sort((a, b) => a.localeCompare(b, 'ms', { sensitivity: 'base' }));
+  namesInput.value = state.names.join('\n'); reel.idle(); save();
+};
+$('#clearBtn').onclick = () => {
+  if (!state.names.length || !confirm('Kosongkan semua nama?')) return;
+  state.names = []; state.last.name = null; namesInput.value = '';
+  updateCounts(); reel.idle(); renderLast(); save(); namesInput.focus();
+};
+
+function regen() {
+  state.colors = genColors(state.colorNum, state.colorStyle);
+  renderSwatches(); updateCounts(); wheel.draw(); save();
+}
+colorStyle.onchange = () => { state.colorStyle = colorStyle.value; regen(); };
+colorNum.oninput = () => { state.colorNum = +colorNum.value; $('#colorNumLabel').textContent = state.colorNum; regen(); };
+$('#regenBtn').onclick = regen;
+$('#addColorBtn').onclick = () => {
+  state.colors.push($('#addColor').value.toLowerCase());
+  renderSwatches(); updateCounts(); wheel.draw(); save();
+  toast('Warna ditambah ke roda');
+};
+
+durInput.oninput = () => { state.duration = +durInput.value; $('#durLabel').textContent = state.duration; saveSoon(); };
+
+$('#clearHistBtn').onclick = () => {
+  state.history = [];
+  renderHistory(); save();
+};
+
+soundBtn.onclick = () => { state.sound = !state.sound; renderSound(); save(); };
+
+fsBtn.onclick = () => {
+  if (document.fullscreenElement) { document.exitFullscreen(); return; }
+  const el = document.documentElement;
+  if (el.requestFullscreen) el.requestFullscreen().catch(() => document.body.classList.toggle('presenting'));
+  else document.body.classList.toggle('presenting');
+};
+document.addEventListener('fullscreenchange', () => {
+  document.body.classList.toggle('presenting', !!document.fullscreenElement);
+});
+
+document.addEventListener('keydown', e => {
+  if (!modal.classList.contains('hidden')) {
+    if (e.key === 'Escape') { e.preventDefault(); closeModal(); }
+    return;
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); pickBoth(); }
+});
+
+/* ================= init ================= */
+namesInput.value = state.names.join('\n');
+colorStyle.value = state.colorStyle;
+colorNum.value = state.colorNum; $('#colorNumLabel').textContent = state.colorNum;
+durInput.value = state.duration; $('#durLabel').textContent = state.duration;
+updateCounts(); renderSwatches(); renderSound(); renderHistory(); renderLast();
+reel.idle();
+wheel.resize();
+})();
+</script>
+</body>
+</html>
