@@ -2,7 +2,7 @@
 
 Masukkan nama dulu, kemudian pusing roda — setiap nama (ikut giliran 1, 2, 3…) dapat satu warna.
 
-- Warna roda: warna sistem iPhone yang terang (Apple HIG) + **Emas**
+- Warna roda: warna sistem iPhone yang terang (Apple HIG) + **Gold**
 - Roda dikunci selagi belum ada nama
 - Pilihan "satu warna untuk satu orang"
 - Salin keputusan untuk paste dalam WhatsApp

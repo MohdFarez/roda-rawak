@@ -227,20 +227,20 @@ const randInt = n => Math.floor(rand() * n);
 const mod = (a, m) => ((a % m) + m) % m;
 const ease = t => 1 - Math.pow(1 - t, 3);
 
-/* ================= colours: iPhone system colours (Apple HIG, dark appearance) + Emas ================= */
+/* ================= colours: iPhone system colours (Apple HIG, dark appearance) + Gold ================= */
 const COLORS = [
-  { key: 'red',    name: 'Merah',       hex: '#FF4245' },
-  { key: 'orange', name: 'Oren',        hex: '#FF9230' },
-  { key: 'yellow', name: 'Kuning',      hex: '#FFD600' },
-  { key: 'green',  name: 'Hijau',       hex: '#30D158' },
-  { key: 'mint',   name: 'Pudina',      hex: '#00DAC3' },
-  { key: 'teal',   name: 'Firus',       hex: '#00D2E0' },
-  { key: 'cyan',   name: 'Biru Langit', hex: '#3CD3FE' },
-  { key: 'blue',   name: 'Biru',        hex: '#0091FF' },
-  { key: 'indigo', name: 'Nila',        hex: '#6D7CFF' },
-  { key: 'purple', name: 'Ungu',        hex: '#DB34F2' },
-  { key: 'pink',   name: 'Merah Jambu', hex: '#FF375F' },
-  { key: 'gold',   name: 'Emas',        hex: '#D4AF37', gold: true }
+  { key: 'red',    name: 'Red',    hex: '#FF4245' },
+  { key: 'orange', name: 'Orange', hex: '#FF9230' },
+  { key: 'yellow', name: 'Yellow', hex: '#FFD600' },
+  { key: 'green',  name: 'Green',  hex: '#30D158' },
+  { key: 'mint',   name: 'Mint',   hex: '#00DAC3' },
+  { key: 'teal',   name: 'Teal',   hex: '#00D2E0' },
+  { key: 'cyan',   name: 'Cyan',   hex: '#3CD3FE' },
+  { key: 'blue',   name: 'Blue',   hex: '#0091FF' },
+  { key: 'indigo', name: 'Indigo', hex: '#6D7CFF' },
+  { key: 'purple', name: 'Purple', hex: '#DB34F2' },
+  { key: 'pink',   name: 'Pink',   hex: '#FF375F' },
+  { key: 'gold',   name: 'Gold',   hex: '#D4AF37', gold: true }
 ];
 const BY_KEY = Object.fromEntries(COLORS.map(c => [c.key, c]));
 const GOLD_CSS = 'linear-gradient(135deg,#A9791C 0%,#F9E08B 38%,#E6C15A 58%,#B8892A 100%)';
