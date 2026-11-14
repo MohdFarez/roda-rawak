@@ -1,11 +1,12 @@
-# 🎡 Pilih Rawak — Pilih Nama & Roda Warna
+# 🎡 Roda Warna — Siapa Dapat Warna Apa?
 
-Satu fail HTML untuk:
+Masukkan nama dulu, kemudian pusing roda — setiap nama (ikut giliran 1, 2, 3…) dapat satu warna.
 
-- **👥 Pilih Nama** — pemilih nama rawak gaya mesin slot
-- **🎨 Roda Warna** — roda warna rawak (HEX / RGB / HSL)
-- **🎲 Pilih Dua-dua** — nama + warna serentak (`Ctrl` + `Enter`)
+- Warna roda: warna sistem iPhone yang terang (Apple HIG) + **Emas**
+- Roda dikunci selagi belum ada nama
+- Pilihan "satu warna untuk satu orang"
+- Salin keputusan untuk paste dalam WhatsApp
 
 🔗 Live: https://mohdfarez.github.io/roda-rawak/
 
-Tiada library luar — buka `index.html` terus dalam browser pun boleh (offline).
+Tiada library luar — `index.html` boleh dibuka terus dalam browser (offline).
