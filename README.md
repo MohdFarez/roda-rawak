@@ -7,7 +7,7 @@ Masukkan nama dulu, kemudian pusing roda — setiap nama (ikut giliran 1, 2, 3�
 **11 warna tema:** Merah ❤️ · Pink 💗 · Blue 💙 · Ungu 💜 · Hijau 💚 · Kuning 💛 · Oren 🧡 · Putih 🤍 · Hitam 🖤 · Coklat 🤎 · Gold ✨
 
 - Roda dikunci selagi belum ada nama
-- Pilihan "satu warna untuk satu orang"
+- Warna yang dah keluar terus dibuang dari roda — tak boleh ulang
 - Salin keputusan untuk paste dalam WhatsApp
 
 🔗 Live: https://mohdfarez.github.io/roda-rawak/

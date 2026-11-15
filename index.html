@@ -85,9 +85,8 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-templ
 .cchip:active{transform:translate(2px,2px);box-shadow:none}
 .cchip .dot{width:15px;height:15px;border-radius:50%;flex:none;border:2px solid var(--ink)}
 .cchip.off{opacity:.4;border-style:dashed;text-decoration:line-through;box-shadow:none}
-.cchip.used{background:#f1ece0}
-.switch{display:flex;align-items:flex-start;gap:10px;font-size:14.5px;font-weight:600;cursor:pointer;user-select:none;line-height:1.35}
-.switch input{width:22px;height:22px;accent-color:var(--pink);flex:none;margin:0}
+.cchip.used{background:#ece5d6;opacity:.6;text-decoration:line-through;box-shadow:none}
+.note{margin:0;font-size:14px;font-weight:700;background:var(--yellow);border:2.5px solid var(--ink);border-radius:12px;padding:8px 12px}
 input[type=range]{width:100%;accent-color:var(--pink)}
 
 /* ---------- names ---------- */
@@ -178,7 +177,7 @@ body.presenting .names{margin-top:0}
         <button class="btn" id="shuffleColorsBtn" data-lock>🔀 Kocok warne</button>
         <button class="btn" id="allColorsBtn" data-lock>✅ Semue warne</button>
       </div>
-      <label class="switch"><input type="checkbox" id="uniqueChk" data-lock> Sorang satu warne je (warne hok doh kene ambik, buang dari rode)</label>
+      <p class="note">🔒 Warne hok doh kene ambik terus buang dari rode — dok buleh ulang.</p>
       <div>
         <p class="label">Lame pusing: <b id="durLabel">5</b> saat</p>
         <input type="range" id="duration" min="2" max="12" value="5">
@@ -235,7 +234,7 @@ const T = {
   spinFor: name => `🌀 Pusing la, ${name}!`,
   lockNoNames: ['🔒 Bubuh name dulu weh', 'Taip name, tekang Enter'],
   lockDone: ['🎉 Semue doh dapak warne!', 'Tamboh name lagi ke tekang ↺ Maing semule'],
-  lockNoLeft: ['😅 Warne doh habih', 'Tamboh warne ke matikang “sorang satu warne”'],
+  lockNoLeft: n => ['😅 Warne doh habih', `Warne ade ${n} je — tekang ↺ Maing semule`],
   lockNoColors: ['🎨 Rode kosong', 'Bubuh sekurang-kurangnye satu warne'],
   emptyList: 'Dok ade name lagi 🥲<br>Taip name kak atah, tekang <b>Enter</b> 👆',
   waiting: '👀 gilirang',
@@ -243,6 +242,7 @@ const T = {
   delTitle: 'Buang name ning',
   chipOn: 'Klik nok buang dari rode',
   chipOff: 'Klik nok bubuh balik kak rode',
+  chipUsed: name => `Doh kene ambik dengang ${name}`,
   toastTypeName: 'Taip name dulu weh 😤',
   toastDupOne: 'Name tu doh ade lah 🙄',
   toastDupMany: n => `${n} name doh ade, dok tamboh`,
@@ -251,6 +251,8 @@ const T = {
   toastNeedName: 'Bubuh name dulu weh',
   toastAllDone: 'Semue doh dapak warne 💅',
   toastNoColor: 'Rode kosong, bubuh warne dulu',
+  toastNoLeft: 'Warne doh habih 😅',
+  toastTooMany: n => `Warne ade ${n} je — name lebih tu dok dapak warne 😬`,
   confirmReset: 'Kosongkang semue warne & maing semule? (Name kekal)',
   confirmClear: 'Buang semue name ke? 😳',
   winKicker: name => `🎉 ${name} dapak warne`,
@@ -326,7 +328,6 @@ const state = {
   names: [],                                      // [{ name, color: key|null }]
   order: shuffledOrder(),
   enabled: Object.fromEntries(COLORS.map(c => [c.key, true])),
-  unique: false,
   duration: 5,
   sound: true
 };
@@ -337,9 +338,13 @@ function load() {
     if (Array.isArray(d.names)) state.names = d.names
       .filter(x => x && typeof x.name === 'string' && x.name.trim())
       .map(x => ({ name: x.name.trim().slice(0, 40), color: BY_KEY[x.color] ? x.color : null }));
+    const seen = new Set();
+    for (const n of state.names) {                 // older saves could repeat a colour — keep the first only
+      if (!n.color) continue;
+      if (seen.has(n.color)) n.color = null; else seen.add(n.color);
+    }
     if (Array.isArray(d.order) && d.order.length === COLORS.length && d.order.every(k => BY_KEY[k])) state.order = d.order;
     if (d.enabled) for (const c of COLORS) if (typeof d.enabled[c.key] === 'boolean') state.enabled[c.key] = d.enabled[c.key];
-    if (typeof d.unique === 'boolean') state.unique = d.unique;
     if (d.duration >= 2 && d.duration <= 12) state.duration = +d.duration;
     if (typeof d.sound === 'boolean') state.sound = d.sound;
   } catch (e) {}
@@ -347,10 +352,11 @@ function load() {
 function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
 load();
 
+const enabledCount = () => COLORS.filter(c => state.enabled[c.key]).length;
 const usedKeys = () => new Set(state.names.map(n => n.color).filter(Boolean));
 const turnIndex = () => state.names.findIndex(n => !n.color);
-function wheelItems() {
-  const used = state.unique ? usedKeys() : new Set();
+function wheelItems() {                           // picked colours never come back until freed
+  const used = usedKeys();
   return state.order.filter(k => state.enabled[k] && !used.has(k)).map(k => BY_KEY[k]);
 }
 
@@ -510,9 +516,9 @@ function renderChips() {
   for (const k of state.order) {
     const c = BY_KEY[k];
     const b = document.createElement('button');
-    b.className = 'cchip' + (state.enabled[k] ? '' : ' off') + (state.unique && used.has(k) ? ' used' : '');
+    b.className = 'cchip' + (state.enabled[k] ? '' : ' off') + (used.has(k) ? ' used' : '');
     b.dataset.lock = '';
-    b.title = state.enabled[k] ? T.chipOn : T.chipOff;
+    b.title = used.has(k) ? T.chipUsed(state.names.find(n => n.color === k).name) : state.enabled[k] ? T.chipOn : T.chipOff;
     const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = swatch(c);
     b.append(dot, `${c.name} ${c.emoji}`);
     b.onclick = () => {
@@ -565,7 +571,11 @@ function renderNames() {
   });
   freshIdx = -1;
   const t = namesEl.querySelector('.is-turn');
-  if (t) t.scrollIntoView({ block: 'nearest' });
+  if (t && namesEl.scrollHeight > namesEl.clientHeight + 2) {   // scroll inside the list only — never jump the page
+    const lr = namesEl.getBoundingClientRect(), tr = t.getBoundingClientRect();
+    if (tr.top < lr.top) namesEl.scrollTop += tr.top - lr.top - 6;
+    else if (tr.bottom > lr.bottom) namesEl.scrollTop += tr.bottom - lr.bottom + 6;
+  }
 }
 
 function updateTurn() {
@@ -573,7 +583,7 @@ function updateTurn() {
   let msg = null;
   if (!state.names.length) msg = T.lockNoNames;
   else if (ti < 0) msg = T.lockDone;
-  else if (!items.length) msg = state.unique && COLORS.some(c => state.enabled[c.key]) ? T.lockNoLeft : T.lockNoColors;
+  else if (!items.length) msg = COLORS.some(c => state.enabled[c.key]) ? T.lockNoLeft(enabledCount()) : T.lockNoColors;
   lock.textContent = '';
   if (msg) {
     const box = document.createElement('div');
@@ -620,7 +630,10 @@ function addNames(list) {
     added++;
   }
   if (dup) toast(dup === 1 ? T.toastDupOne : T.toastDupMany(dup));
-  if (added) { save(); renderAll(); }
+  if (added) {
+    save(); renderAll();
+    if (state.names.length > enabledCount()) toast(T.toastTooMany(enabledCount()));
+  }
   return added;
 }
 function addFromInput() {
@@ -639,7 +652,7 @@ nameInput.addEventListener('paste', e => {
   if (/[\r\n\t]/.test(text)) {                       // pasted a column from Excel / a list
     e.preventDefault();
     const n = addNames(text.split(/[\r\n\t]+/));
-    if (n) toast(T.toastAdded(n));
+    if (n && state.names.length <= enabledCount()) toast(T.toastAdded(n));   // keep the 'too many names' warning visible
   }
 });
 $('#addBtn').onclick = addFromInput;
@@ -663,8 +676,6 @@ $('#clearBtn').onclick = () => {
 /* ================= colour settings ================= */
 $('#shuffleColorsBtn').onclick = () => { state.order = shuffledOrder(); save(); renderChips(); wheel.draw(); };
 $('#allColorsBtn').onclick = () => { COLORS.forEach(c => { state.enabled[c.key] = true; }); save(); renderChips(); wheel.draw(); updateTurn(); };
-const uniqueChk = $('#uniqueChk');
-uniqueChk.onchange = () => { state.unique = uniqueChk.checked; save(); renderChips(); wheel.draw(); updateTurn(); };
 const durInput = $('#duration');
 durInput.oninput = () => { state.duration = +durInput.value; $('#durLabel').textContent = state.duration; save(); };
 
@@ -674,7 +685,7 @@ function spin() {
   const ti = turnIndex();
   if (!state.names.length) { toast(T.toastNeedName); nameInput.focus(); return; }
   if (ti < 0) { toast(T.toastAllDone); return; }
-  if (!wheelItems().length) { toast(T.toastNoColor); return; }
+  if (!wheelItems().length) { toast(COLORS.some(c => state.enabled[c.key]) ? T.toastNoLeft : T.toastNoColor); return; }
   audio();
   setBusy(true);
   wheel.spin(state.duration * 1000).then(c => {
@@ -706,7 +717,7 @@ function showModal(name, c) {
 }
 function closeModal() {
   modal.classList.add('hidden');
-  wheel.draw();                      // colour may have left the wheel ("sorang satu warne")
+  wheel.draw();                      // the picked colour leaves the wheel now
   updateTurn();
 }
 closeBtn.onclick = closeModal;
@@ -777,12 +788,12 @@ document.addEventListener('keydown', e => {
     return;
   }
   const tag = document.activeElement && document.activeElement.tagName;
+  if (tag === 'INPUT') return;                     // typing a name: Enter only adds it
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); spin(); return; }
   if (e.code === 'Space' && !/^(INPUT|TEXTAREA|BUTTON|SELECT)$/.test(tag)) { e.preventDefault(); spin(); }
 });
 
 /* ================= init ================= */
-uniqueChk.checked = state.unique;
 durInput.value = state.duration; $('#durLabel').textContent = state.duration;
 renderSound();
 renderAll();
