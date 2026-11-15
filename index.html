@@ -120,7 +120,6 @@ body.presenting .names{margin-top:0}
 .modal-top{padding:44px 24px 48px;text-align:center;border-bottom:var(--b)}
 .kicker{margin:0 0 10px;font-size:20px;font-weight:800}
 .modal-top h2{margin:0;font-size:clamp(44px,11vw,70px);line-height:1;letter-spacing:-1.5px;font-weight:800}
-.sub{margin:14px 0 0;font-size:14px;font-weight:700;opacity:.75;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 .modal-actions{display:flex;justify-content:flex-end;padding:18px 20px 20px}
 .modal-actions .btn{font-size:16px;padding:11px 18px}
 @keyframes pop{from{transform:scale(.6) rotate(-6deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
@@ -210,7 +209,6 @@ body.presenting .names{margin-top:0}
     <div class="modal-top" id="modalTop">
       <p class="kicker" id="winKicker"></p>
       <h2 id="winTitle"></h2>
-      <p class="sub" id="winSub"></p>
     </div>
     <div class="modal-actions">
       <button class="btn pink" id="closeBtn">OK</button>
@@ -439,19 +437,7 @@ class Wheel {
       ctx.fill();
       if (n > 1) { ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke(); }
     }
-    const fs = Math.min(r * 0.09, r * 0.75 * arc * 0.55);
-    if (fs >= 7) {
-      ctx.font = `800 ${fs}px ${FONT}`;
-      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      for (let i = 0; i < n; i++) {
-        ctx.save();
-        ctx.translate(c, c);
-        ctx.rotate(this.rotation + (i + 0.5) * arc);
-        ctx.fillStyle = inkFor(items[i]);
-        ctx.fillText(items[i].name, r - fs * 0.8, 0);
-        ctx.restore();
-      }
-    }
+    // no text on the wheel — colours only
     ctx.beginPath(); ctx.arc(c, c, r, 0, TAU);
     ctx.lineWidth = 6; ctx.strokeStyle = INK; ctx.stroke();
   }
@@ -713,7 +699,6 @@ function showModal(name, c) {
   top.style.color = inkFor(c);
   $('#winKicker').textContent = T.winKicker(name);
   $('#winTitle').textContent = `${c.name} ${c.emoji}`;
-  $('#winSub').textContent = c.hex;
   const next = turnIndex();
   closeBtn.textContent = next >= 0 ? T.next(state.names[next].name) : T.finished;
   modal.classList.remove('hidden');
