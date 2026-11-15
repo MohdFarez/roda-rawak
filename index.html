@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Roda Warna — Siapa Dapat Warna Apa?</title>
+<title>Roda Warna Tukar Hadiah 🎁</title>
 <style>
 :root{
   --bg:#0b1020;--card:#141a2e;--card2:#1b2340;--line:#28315a;--text:#eef1fa;--muted:#8d97bd;
@@ -68,7 +68,7 @@ main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-temp
 /* colour chips */
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .cchip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px 6px 8px;border-radius:999px;border:1px solid var(--line);background:var(--card2);font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
-.cchip .dot{width:14px;height:14px;border-radius:50%;flex:none}
+.cchip .dot{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.35)}
 .cchip.off{opacity:.38;text-decoration:line-through}
 .cchip.used{outline:2px dashed rgba(255,255,255,.25);outline-offset:1px}
 .switch{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;user-select:none}
@@ -85,8 +85,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .nrow .no{font-size:20px;font-weight:800;color:var(--muted);min-width:34px;text-align:right}
 .nrow .nm{flex:1;min-width:0;font-size:19px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nrow .res{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:15px;padding:6px 12px;border-radius:999px;white-space:nowrap}
-.nrow .res.none{color:var(--muted);font-weight:500;padding:6px 4px}
-.nrow .res.wait{color:var(--accent);background:rgba(0,145,255,.12)}
+.nrow .res{box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+.nrow .res.none{box-shadow:none;color:var(--muted);font-weight:500;padding:6px 4px}
+.nrow .res.wait{box-shadow:none;color:var(--accent);background:rgba(0,145,255,.12)}
 .nrow.is-turn{border-color:var(--accent);background:rgba(0,145,255,.10)}
 .nrow.fresh{animation:pop .5s cubic-bezier(.2,1.5,.4,1)}
 .mini{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font-size:15px;flex:none}
@@ -126,7 +127,7 @@ body.presenting .settings-col,body.presenting .add-card,body.presenting .names-a
 <body>
 
 <header>
-  <div class="brand">🎡 Roda Warna</div>
+  <div class="brand">🎁 Roda Warna Tukar Hadiah</div>
   <div class="tools">
     <button class="icon-btn" id="soundBtn" title="Bunyi">🔊</button>
     <button class="icon-btn" id="fsBtn" title="Skrin penuh / mod persembahan">⛶</button>
@@ -227,25 +228,24 @@ const randInt = n => Math.floor(rand() * n);
 const mod = (a, m) => ((a % m) + m) % m;
 const ease = t => 1 - Math.pow(1 - t, 3);
 
-/* ================= colours: iPhone system colours (Apple HIG, dark appearance) + Gold ================= */
+/* ================= colours: 11 warna Tema Tukar Hadiah ================= */
 const COLORS = [
-  { key: 'red',    name: 'Red',    hex: '#FF4245' },
-  { key: 'orange', name: 'Orange', hex: '#FF9230' },
-  { key: 'yellow', name: 'Yellow', hex: '#FFD600' },
-  { key: 'green',  name: 'Green',  hex: '#30D158' },
-  { key: 'mint',   name: 'Mint',   hex: '#00DAC3' },
-  { key: 'teal',   name: 'Teal',   hex: '#00D2E0' },
-  { key: 'cyan',   name: 'Cyan',   hex: '#3CD3FE' },
-  { key: 'blue',   name: 'Blue',   hex: '#0091FF' },
-  { key: 'indigo', name: 'Indigo', hex: '#6D7CFF' },
-  { key: 'purple', name: 'Purple', hex: '#DB34F2' },
-  { key: 'pink',   name: 'Pink',   hex: '#FF375F' },
-  { key: 'gold',   name: 'Gold',   hex: '#D4AF37', gold: true }
+  { key: 'red',    name: 'Merah',  emoji: '❤️', hex: '#FF4245' },
+  { key: 'pink',   name: 'Pink',   emoji: '💗', hex: '#FF6FB5' },
+  { key: 'blue',   name: 'Blue',   emoji: '💙', hex: '#0091FF' },
+  { key: 'purple', name: 'Ungu',   emoji: '💜', hex: '#AF52DE' },
+  { key: 'green',  name: 'Hijau',  emoji: '💚', hex: '#30D158' },
+  { key: 'yellow', name: 'Kuning', emoji: '💛', hex: '#FFD600' },
+  { key: 'orange', name: 'Oren',   emoji: '🧡', hex: '#FF9230' },
+  { key: 'white',  name: 'Putih',  emoji: '🤍', hex: '#F5F5F7' },
+  { key: 'black',  name: 'Hitam',  emoji: '🖤', hex: '#1C1C1E' },
+  { key: 'brown',  name: 'Coklat', emoji: '🤎', hex: '#8B5E3C' },
+  { key: 'gold',   name: 'Gold',   emoji: '✨', hex: '#D4AF37', gold: true }
 ];
 const BY_KEY = Object.fromEntries(COLORS.map(c => [c.key, c]));
 const GOLD_CSS = 'linear-gradient(135deg,#A9791C 0%,#F9E08B 38%,#E6C15A 58%,#B8892A 100%)';
 // pairs that look too alike to sit next to each other on the wheel
-const SIMILAR = new Set(['mint|teal','teal|cyan','mint|cyan','red|pink','blue|cyan','blue|indigo','yellow|gold','orange|gold','indigo|purple']);
+const SIMILAR = new Set(['red|pink','red|orange','orange|yellow','yellow|gold','orange|gold','brown|gold','brown|orange','pink|purple','black|brown']);
 const alike = (a, b) => SIMILAR.has(a + '|' + b) || SIMILAR.has(b + '|' + a);
 
 function hexToRgb(hex) { const n = parseInt(hex.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
@@ -383,7 +383,7 @@ class Wheel {
         ctx.fillStyle = g;
       } else ctx.fillStyle = it.hex;
       ctx.fill();
-      if (n > 1) { ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.stroke(); }
+      if (n > 1) { ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(20,22,31,.3)'; ctx.stroke(); }
     }
     const fs = Math.min(r * 0.085, r * 0.75 * arc * 0.55);
     if (fs >= 7) {
@@ -474,7 +474,7 @@ function renderChips() {
     b.dataset.lock = '';
     b.title = state.enabled[k] ? 'Klik untuk buang dari roda' : 'Klik untuk masukkan ke roda';
     const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = swatch(c);
-    b.append(dot, c.name);
+    b.append(dot, `${c.name} ${c.emoji}`);
     b.onclick = () => {
       if (busy) return;
       state.enabled[k] = !state.enabled[k];
@@ -505,7 +505,7 @@ function renderNames() {
       res.className = 'res';
       res.style.background = swatch(c);
       res.style.color = inkFor(c);
-      res.textContent = c.name;
+      res.textContent = `${c.name} ${c.emoji}`;
     } else if (i === ti) { res.className = 'res wait'; res.textContent = '← giliran'; }
     else { res.className = 'res none'; res.textContent = '—'; }
     li.append(no, nm, res);
@@ -601,7 +601,7 @@ nameInput.addEventListener('paste', e => {
 $('#addBtn').onclick = addFromInput;
 
 $('#copyBtn').onclick = () => {
-  const lines = state.names.map((n, i) => `${i + 1}. ${n.name} — ${n.color ? BY_KEY[n.color].name : '-'}`);
+  const lines = state.names.map((n, i) => `${i + 1}. ${n.name} — ${n.color ? BY_KEY[n.color].name + ' ' + BY_KEY[n.color].emoji : '-'}`);
   copy(lines.join('\n'), 'Keputusan disalin — boleh paste dalam WhatsApp');
 };
 $('#resetBtn').onclick = () => {
@@ -654,7 +654,7 @@ function showModal(name, c) {
   top.style.background = swatch(c);
   top.style.color = inkFor(c);
   $('#winKicker').textContent = `🎉 ${name} dapat warna`;
-  $('#winTitle').textContent = c.name;
+  $('#winTitle').textContent = `${c.name} ${c.emoji}`;
   $('#winSub').textContent = c.hex;
   const next = turnIndex();
   closeBtn.textContent = next >= 0 ? `Seterusnya: ${state.names[next].name} ➜` : 'Siap 🎉';

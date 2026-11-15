@@ -1,8 +1,9 @@
-# 🎡 Roda Warna — Siapa Dapat Warna Apa?
+# 🎁 Roda Warna Tukar Hadiah
 
-Masukkan nama dulu, kemudian pusing roda — setiap nama (ikut giliran 1, 2, 3…) dapat satu warna.
+Masukkan nama dulu, kemudian pusing roda — setiap nama (ikut giliran 1, 2, 3…) dapat satu warna tema untuk tukar hadiah.
 
-- Warna roda: warna sistem iPhone yang terang (Apple HIG) + **Gold**
+**11 warna tema:** Merah ❤️ · Pink 💗 · Blue 💙 · Ungu 💜 · Hijau 💚 · Kuning 💛 · Oren 🧡 · Putih 🤍 · Hitam 🖤 · Coklat 🤎 · Gold ✨
+
 - Roda dikunci selagi belum ada nama
 - Pilihan "satu warna untuk satu orang"
 - Salin keputusan untuk paste dalam WhatsApp
