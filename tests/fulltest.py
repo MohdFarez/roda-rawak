@@ -73,7 +73,7 @@ async def paste(pg, text):
       i.dispatchEvent(new ClipboardEvent('paste', { clipboardData: dt, bubbles: true, cancelable: true })); }""", text)
 
 async def count(pg):
-    return int(await pg.text_content('#nameCount'))
+    return int((await pg.text_content('#nameCount')).split('/')[0])
 
 async def main():
     srv = subprocess.Popen([sys.executable, '-m', 'http.server', '8765', '--bind', '127.0.0.1'], cwd=ROOT,
@@ -222,15 +222,26 @@ async def main():
             pg.once('dialog', lambda d: asyncio.ensure_future(d.accept()))
             await pg.click('#clearBtn'); await pg.wait_for_timeout(200)
             check('Kosongkang clears everything', await count(pg) == 0)
-            await paste(pg, '\n'.join(f'Org{i}' for i in range(1, 13)))
-            check('12 names added, warning that only 11 colours exist', await count(pg) == 12 and 'Warne ade 11' in await toast_text(pg))
+            check('counter shows 0/11', await pg.text_content('#nameCount') == '0/11')
+            for i in range(1, 11):
+                await add(pg, f'Org{i}')
+            await paste(pg, 'Org11\nOrg12\nOrg13')
+            check('pasting past the limit: stops at 11, says how many were left out', await count(pg) == 11 and 'Had 11 name' in await toast_text(pg) and '2 name dok masuk' in await toast_text(pg))
+            check('counter shows 11/11', await pg.text_content('#nameCount') == '11/11')
+            check('at 11 names: name box + Tamboh blocked, box says "cukup 11"', await pg.is_disabled('#nameInput') and await pg.is_disabled('#addBtn') and 'cukup 11' in (await pg.get_attribute('#nameInput', 'placeholder')))
+            await pg.evaluate("document.getElementById('nameInput').disabled=false")   # even if someone forces the box open…
+            await add(pg, 'Org99')
+            check('…a 12th name still cannot get in', await count(pg) == 11 and 'Had 11 name' in await toast_text(pg))
             got = []
             for i in range(11):
                 got.append(await do_spin(pg, 'btn', f'big game spin {i+1}:')); await close_modal(pg)
-            check('11 spins → all 11 colours, none repeated', sorted(got) == sorted(HEX.keys()), got)
-            check('12th person: wheel locked "Warne doh habih"', 'Warne doh habih' in await pg.text_content('#lock') and await pg.is_disabled('#spinBtn'))
+                if i == 0: check('name box stays blocked after a spin when full', await pg.is_disabled('#nameInput') and await pg.is_disabled('#addBtn'))
+            check('11 names → 11 spins → all 11 colours, none repeated', sorted(got) == sorted(HEX.keys()), got)
+            check('all 11 done → wheel locked "Semue doh dapak warne"', 'Semue doh dapak warne' in await pg.text_content('#lock') and await pg.is_disabled('#spinBtn'))
             await pg.evaluate("document.activeElement.blur()"); await pg.keyboard.press('Space'); await pg.wait_for_timeout(300)
-            check('Space cannot force a spin when colours are used up', not await modal_open(pg))
+            check('Space cannot force a spin when everyone is done', not await modal_open(pg))
+            await pg.click('.nrow:nth-child(11) .mini:last-child')
+            check('removing one name re-opens the name box (10/11)', not await pg.is_disabled('#nameInput') and await pg.text_content('#nameCount') == '10/11')
 
             # ---------- 10. keyboard in the name box ----------
             pg.once('dialog', lambda d: asyncio.ensure_future(d.accept()))
@@ -261,6 +272,9 @@ async def main():
             check('old save: repeated colour cleared, unknown colour cleared, junk ignored',
                   [r['name'] for r in rows] == ['A', 'B', 'C'] and rows[0]['res'].startswith('Merah') and rows[1]['res'] == '👀 gilirang' and rows[2]['res'] == '—', rows)
             check('old save: bad duration ignored', await pg.input_value('#duration') == '5')
+            await pg.evaluate("""localStorage.setItem('rodaWarna.v1', JSON.stringify({names: Array.from({length:15}, (_, i) => ({name:'P'+i, color:null}))}))""")
+            await pg.reload(); await pg.wait_for_timeout(300)
+            check('old save with 15 names → only first 11 load', await count(pg) == 11 and (await assigned(pg))[-1]['name'] == 'P10')
             await ctx.close()
 
             # ---------- 13. phone ----------

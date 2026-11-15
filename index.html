@@ -253,6 +253,9 @@ const T = {
   toastNoColor: 'Rode kosong, bubuh warne dulu',
   toastNoLeft: 'Warne doh habih 😅',
   toastTooMany: n => `Warne ade ${n} je — name lebih tu dok dapak warne 😬`,
+  toastFull: (max, over) => `Had ${max} name je weh 🙅 — ${over} name dok masuk`,
+  inputPlaceholder: 'Taip name, tekang Enter…',
+  inputFull: max => `Doh cukup ${max} name ✅`,
   confirmReset: 'Kosongkang semue warne & maing semule? (Name kekal)',
   confirmClear: 'Buang semue name ke? 😳',
   winKicker: name => `🎉 ${name} dapak warne`,
@@ -298,6 +301,7 @@ const COLORS = [
   { key: 'gold',   name: 'Gold',   emoji: '✨', hex: '#D4AF37', gold: true }
 ];
 const BY_KEY = Object.fromEntries(COLORS.map(c => [c.key, c]));
+const MAX_NAMES = COLORS.length;                  // one colour each → 11 names max
 const GOLD_CSS = 'linear-gradient(135deg,#A9791C 0%,#F9E08B 38%,#E6C15A 58%,#B8892A 100%)';
 const SIMILAR = new Set(['red|pink','red|orange','orange|yellow','yellow|gold','orange|gold','brown|gold','brown|orange','pink|purple','black|brown']);
 const alike = (a, b) => SIMILAR.has(a + '|' + b) || SIMILAR.has(b + '|' + a);
@@ -337,7 +341,8 @@ function load() {
     if (!d) return;
     if (Array.isArray(d.names)) state.names = d.names
       .filter(x => x && typeof x.name === 'string' && x.name.trim())
-      .map(x => ({ name: x.name.trim().slice(0, 40), color: BY_KEY[x.color] ? x.color : null }));
+      .map(x => ({ name: x.name.trim().slice(0, 40), color: BY_KEY[x.color] ? x.color : null }))
+      .slice(0, MAX_NAMES);
     const seen = new Set();
     for (const n of state.names) {                 // older saves could repeat a colour — keep the first only
       if (!n.color) continue;
@@ -533,7 +538,7 @@ function renderChips() {
 
 function renderNames() {
   namesEl.innerHTML = '';
-  $('#nameCount').textContent = state.names.length;
+  updateInputState();
   $('#namesActions').classList.toggle('hidden', !state.names.length);
   if (!state.names.length) {
     namesEl.innerHTML = `<li class="empty">${T.emptyList}</li>`;
@@ -613,28 +618,36 @@ function renderAll() { renderNames(); renderChips(); wheel.draw(); updateTurn();
 function setBusy(b) {
   busy = b;
   document.querySelectorAll('[data-lock]').forEach(el => { el.disabled = b; });
-  nameInput.disabled = b;
   namesEl.querySelectorAll('.mini').forEach(el => { el.disabled = b; });
+  updateInputState();
   updateTurn();
+}
+
+function updateInputState() {                       // name box closes at 11 names
+  const full = state.names.length >= MAX_NAMES;
+  nameInput.disabled = busy || full;
+  $('#addBtn').disabled = busy || full;
+  nameInput.placeholder = full ? T.inputFull(MAX_NAMES) : T.inputPlaceholder;
+  $('#nameCount').textContent = `${state.names.length}/${MAX_NAMES}`;
 }
 
 /* ================= names ================= */
 function addNames(list) {
-  let added = 0, dup = 0;
+  let added = 0, dup = 0, over = 0;
   for (const raw of list) {
     const name = raw.trim().slice(0, 40);
     if (!name) continue;
     if (state.names.some(n => n.name.toLowerCase() === name.toLowerCase())) { dup++; continue; }
+    if (state.names.length >= MAX_NAMES) { over++; continue; }
     state.names.push({ name, color: null });
     freshIdx = state.names.length - 1;
     added++;
   }
-  if (dup) toast(dup === 1 ? T.toastDupOne : T.toastDupMany(dup));
-  if (added) {
-    save(); renderAll();
-    if (state.names.length > enabledCount()) toast(T.toastTooMany(enabledCount()));
-  }
-  return added;
+  if (added) { save(); renderAll(); }
+  if (over) toast(T.toastFull(MAX_NAMES, over));
+  else if (dup) toast(dup === 1 ? T.toastDupOne : T.toastDupMany(dup));
+  else if (added && state.names.length > enabledCount()) toast(T.toastTooMany(enabledCount()));
+  return { added, dup, over };
 }
 function addFromInput() {
   if (busy) return;
@@ -642,7 +655,7 @@ function addFromInput() {
   if (!v.trim()) { toast(T.toastTypeName); nameInput.focus(); return; }
   addNames([v]);
   nameInput.value = '';
-  nameInput.focus();
+  if (!nameInput.disabled) nameInput.focus();
 }
 nameInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') { e.preventDefault(); addFromInput(); }
@@ -651,8 +664,8 @@ nameInput.addEventListener('paste', e => {
   const text = (e.clipboardData || window.clipboardData).getData('text');
   if (/[\r\n\t]/.test(text)) {                       // pasted a column from Excel / a list
     e.preventDefault();
-    const n = addNames(text.split(/[\r\n\t]+/));
-    if (n && state.names.length <= enabledCount()) toast(T.toastAdded(n));   // keep the 'too many names' warning visible
+    const r = addNames(text.split(/[\r\n\t]+/));
+    if (r.added && !r.over && !r.dup && state.names.length <= enabledCount()) toast(T.toastAdded(r.added));
   }
 });
 $('#addBtn').onclick = addFromInput;
