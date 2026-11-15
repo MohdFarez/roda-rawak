@@ -3,187 +3,203 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Roda Warna Tukar Hadiah 🎁</title>
+<title>Rode Warne Tuka Hadioh 🎁</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0b1020;--card:#141a2e;--card2:#1b2340;--line:#28315a;--text:#eef1fa;--muted:#8d97bd;
-  --accent:#0091FF;--r:18px;
-  --gold:linear-gradient(135deg,#A9791C 0%,#F9E08B 38%,#E6C15A 58%,#B8892A 100%);
-  --font:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --stage:min(100%,62vh,560px);
+  --ink:#111111;--paper:#FFF7E8;--white:#ffffff;
+  --lime:#C8FF4D;--pink:#FF5FA2;--purple:#7C5CFF;--yellow:#FFE14D;--sky:#7CC8FF;
+  --muted:#6b6357;
+  --b:3px solid var(--ink);--sh:5px 5px 0 var(--ink);--sh-sm:3px 3px 0 var(--ink);
+  --r:18px;
+  --font:"Bricolage Grotesque",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  --stage:min(100%,60vh,540px);
 }
 *{box-sizing:border-box}
 html,body{margin:0}
-body{min-height:100vh;font-family:var(--font);color:var(--text);
-  background:radial-gradient(1100px 700px at 25% 15%,#1b2a5c 0%,rgba(11,16,32,0) 60%),
-             radial-gradient(900px 600px at 95% 95%,#2b1742 0%,rgba(11,16,32,0) 55%),var(--bg);background-attachment:fixed}
+body{min-height:100vh;font-family:var(--font);color:var(--ink);background-color:var(--paper);
+  background-image:radial-gradient(#d8c9ad 1.3px,transparent 1.3px);background-size:22px 22px}
 button,input{font:inherit;color:inherit}
 .hidden{display:none!important}
 
-/* header */
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px}
-.brand{font-weight:800;font-size:21px;letter-spacing:-.2px}
-.tools{display:flex;gap:8px}
-.icon-btn{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);cursor:pointer;font-size:18px;display:grid;place-items:center}
-.icon-btn:hover{background:var(--card2)}
+/* ---------- header + marquee ---------- */
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 22px 12px}
+.brand{font-weight:800;font-size:clamp(20px,3vw,28px);letter-spacing:-.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sticker{display:inline-block;font-size:13px;font-weight:800;background:var(--lime);border:var(--b);border-radius:999px;padding:3px 10px;transform:rotate(-4deg);box-shadow:var(--sh-sm);letter-spacing:0}
+.tools{display:flex;gap:10px}
+.icon-btn{width:44px;height:44px;border-radius:14px;border:var(--b);background:var(--white);box-shadow:var(--sh-sm);cursor:pointer;font-size:19px;display:grid;place-items:center;transition:transform .1s,box-shadow .1s}
+.icon-btn:active{transform:translate(3px,3px);box-shadow:none}
+.marquee{background:var(--ink);color:var(--lime);border-block:var(--b);overflow:hidden;white-space:nowrap;font-weight:800;font-size:15px;letter-spacing:.3px}
+.marquee .track{display:inline-block;padding:8px 0;animation:scroll 28s linear infinite}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* layout */
-main{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"wheel names" "settings names";gap:24px 30px;padding:4px 22px 30px;align-items:start}
-.wheel-col{grid-area:wheel}.names-col{grid-area:names}.settings-col{grid-area:settings;display:flex;justify-content:center}
-.col{display:flex;flex-direction:column;gap:14px;min-width:0}
-.col.wheel-col{align-items:center}
-.col-title{margin:0;font-size:30px;font-weight:800;letter-spacing:-.5px}
-.col-title small{font-size:14px;font-weight:700;color:var(--muted);margin-left:8px;vertical-align:middle;
-  background:var(--card2);border:1px solid var(--line);padding:3px 10px;border-radius:999px;letter-spacing:0}
-.card{background:rgba(20,26,46,.86);border:1px solid var(--line);border-radius:var(--r);padding:16px;backdrop-filter:blur(6px);width:100%}
-.btn{border:1px solid var(--line);background:var(--card2);padding:9px 14px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;transition:.15s}
-.btn:hover{border-color:#3d4a82;background:#222b4d}
+/* ---------- layout ---------- */
+main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"wheel names" "settings names";gap:26px 34px;padding:24px 22px 40px;align-items:start}
+.wheel-col{grid-area:wheel;display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
+.names-col{grid-area:names;display:flex;flex-direction:column;gap:14px;min-width:0}
+.settings-col{grid-area:settings;display:flex;justify-content:center}
+.col-title{margin:0;font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-1px;line-height:1}
+.col-title .hl{display:inline-block;padding:2px 12px 4px;border:var(--b);border-radius:12px;box-shadow:var(--sh-sm);transform:rotate(-2deg)}
+.col-title .hl.pink{background:var(--pink)}
+.col-title .hl.sky{background:var(--sky)}
+.col-title small{font-size:15px;font-weight:800;margin-left:10px;vertical-align:middle;background:var(--yellow);border:var(--b);padding:2px 10px;border-radius:999px;letter-spacing:0}
+
+.card{background:var(--white);border:var(--b);border-radius:var(--r);box-shadow:var(--sh);padding:16px;width:100%}
+.btn{border:var(--b);background:var(--white);padding:9px 14px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:var(--sh-sm);transition:transform .1s,box-shadow .1s}
+.btn:hover{background:#fffbe9}
+.btn:active:not(:disabled){transform:translate(3px,3px);box-shadow:none}
 .btn:disabled{opacity:.45;cursor:not-allowed}
-.btn.primary{background:var(--accent);border:0;color:#fff;font-weight:700}
-.btn.primary:hover{filter:brightness(1.1)}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap}
-.label{font-size:13px;color:var(--muted);font-weight:600;margin:0 0 8px}
+.btn.lime{background:var(--lime)}
+.btn.pink{background:var(--pink)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.label{font-size:14px;font-weight:700;margin:0 0 10px}
+.label span{font-weight:500;color:var(--muted)}
 
-/* turn banner + spin */
-.turn{font-size:18px;color:var(--muted);text-align:center;min-height:28px}
-.turn b{color:var(--text);font-size:22px}
-.spin-btn{min-width:240px;font-size:17px;padding:13px 26px;border-radius:999px;box-shadow:0 10px 28px rgba(0,145,255,.35)}
+/* ---------- turn + spin ---------- */
+.turn{font-size:19px;font-weight:600;text-align:center;min-height:30px}
+.turn b{font-size:24px;font-weight:800;background:var(--lime);border:var(--b);border-radius:10px;padding:0 10px;margin-left:4px;display:inline-block;transform:rotate(-1.5deg)}
+.spin-btn{min-width:250px;font-size:19px;font-weight:800;padding:14px 28px;border-radius:999px;background:var(--pink);box-shadow:var(--sh)}
+.spin-btn:active:not(:disabled){transform:translate(5px,5px)}
 
-/* wheel */
-.wheel-wrap{position:relative;width:var(--stage);aspect-ratio:1/1;margin-top:12px;container-type:inline-size}
-.wheel-wrap canvas{display:block;width:100%;height:100%;border-radius:50%;cursor:pointer;filter:drop-shadow(0 22px 40px rgba(0,0,0,.5))}
-.pointer{position:absolute;top:-18px;left:50%;width:44px;height:52px;margin-left:-22px;z-index:4;transform-origin:22px 20px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45));pointer-events:none}
-.pointer svg{width:100%;height:100%;display:block}
+/* ---------- wheel ---------- */
+.wheel-wrap{position:relative;width:var(--stage);aspect-ratio:1/1;margin-top:14px;container-type:inline-size}
+.wheel-wrap canvas{display:block;width:100%;height:100%;border-radius:50%;cursor:pointer;filter:drop-shadow(7px 7px 0 var(--ink))}
+.pointer{position:absolute;top:-20px;left:50%;width:46px;height:54px;margin-left:-23px;z-index:4;transform-origin:23px 20px;pointer-events:none}
+.pointer svg{width:100%;height:100%;display:block;overflow:visible}
 .pointer.flick{animation:flick .14s ease-out}
 @keyframes flick{0%{transform:rotate(0)}35%{transform:rotate(-16deg)}100%{transform:rotate(0)}}
-.hub{position:absolute;left:50%;top:50%;width:21%;aspect-ratio:1/1;transform:translate(-50%,-50%);border-radius:50%;border:5px solid #fff;padding:0;z-index:2;
-  background:radial-gradient(circle at 35% 30%,#33407a,#0e1430 75%);color:#fff;font-weight:800;letter-spacing:.08em;
-  font-size:13px;font-size:clamp(9px,3.1cqi,20px);cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.45);transition:transform .15s}
-.hub:hover:not(:disabled){transform:translate(-50%,-50%) scale(1.06)}
+.hub{position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1/1;transform:translate(-50%,-50%);border-radius:50%;border:4px solid var(--ink);padding:0;z-index:2;
+  background:var(--lime);color:var(--ink);font-weight:800;letter-spacing:.04em;font-size:13px;font-size:clamp(10px,3.4cqi,21px);cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .12s}
+.hub:hover:not(:disabled){transform:translate(-50%,-50%) scale(1.06) rotate(-4deg)}
 .hub:disabled{cursor:not-allowed}
-.lock{position:absolute;inset:0;border-radius:50%;z-index:3;display:grid;place-items:center;text-align:center;padding:18%;
-  background:rgba(8,12,26,.62);backdrop-filter:blur(2px);font-weight:800;font-size:clamp(15px,4.6cqi,26px);line-height:1.3;cursor:default}
-.lock span{display:block;font-size:.62em;font-weight:600;color:var(--muted);margin-top:6px}
+.lock{position:absolute;inset:0;border-radius:50%;z-index:3;display:grid;place-items:center;text-align:center;padding:16%;
+  background:rgba(255,247,232,.84);font-weight:800;font-size:clamp(16px,5cqi,28px);line-height:1.25;cursor:default}
+.lock span{display:block;font-size:.6em;font-weight:600;color:var(--muted);margin-top:8px}
 
-/* colour chips */
+/* ---------- settings ---------- */
+.settings{display:flex;flex-direction:column;gap:18px;max-width:560px}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.cchip{display:inline-flex;align-items:center;gap:7px;padding:6px 11px 6px 8px;border-radius:999px;border:1px solid var(--line);background:var(--card2);font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
-.cchip .dot{width:14px;height:14px;border-radius:50%;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.35)}
-.cchip.off{opacity:.38;text-decoration:line-through}
-.cchip.used{outline:2px dashed rgba(255,255,255,.25);outline-offset:1px}
-.switch{display:flex;align-items:center;gap:10px;font-size:14px;cursor:pointer;user-select:none}
-.switch input{width:20px;height:20px;accent-color:var(--accent)}
-input[type=range]{width:100%;accent-color:var(--accent)}
-.settings{display:flex;flex-direction:column;gap:16px;max-width:560px}
+.cchip{display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 8px;border-radius:999px;border:2.5px solid var(--ink);background:var(--white);font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 var(--ink);transition:transform .1s}
+.cchip:active{transform:translate(2px,2px);box-shadow:none}
+.cchip .dot{width:15px;height:15px;border-radius:50%;flex:none;border:2px solid var(--ink)}
+.cchip.off{opacity:.4;border-style:dashed;text-decoration:line-through;box-shadow:none}
+.cchip.used{background:#f1ece0}
+.switch{display:flex;align-items:flex-start;gap:10px;font-size:14.5px;font-weight:600;cursor:pointer;user-select:none;line-height:1.35}
+.switch input{width:22px;height:22px;accent-color:var(--pink);flex:none;margin:0}
+input[type=range]{width:100%;accent-color:var(--pink)}
 
-/* names */
-.add-row{display:flex;gap:8px}
-.add-row input{flex:1;min-width:0;background:#0d1328;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:16px;outline:none}
-.add-row input:focus{border-color:var(--accent)}
-.names{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;max-height:56vh;overflow:auto}
-.nrow{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--card2);border:2px solid transparent;transition:.2s}
-.nrow .no{font-size:20px;font-weight:800;color:var(--muted);min-width:34px;text-align:right}
-.nrow .nm{flex:1;min-width:0;font-size:19px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nrow .res{display:inline-flex;align-items:center;gap:7px;font-weight:700;font-size:15px;padding:6px 12px;border-radius:999px;white-space:nowrap}
-.nrow .res{box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
-.nrow .res.none{box-shadow:none;color:var(--muted);font-weight:500;padding:6px 4px}
-.nrow .res.wait{box-shadow:none;color:var(--accent);background:rgba(0,145,255,.12)}
-.nrow.is-turn{border-color:var(--accent);background:rgba(0,145,255,.10)}
+/* ---------- names ---------- */
+.add-row{display:flex;gap:10px}
+.add-row input{flex:1;min-width:0;background:var(--paper);border:var(--b);border-radius:12px;padding:12px 14px;font-size:17px;font-weight:600;outline:none}
+.add-row input:focus{background:#fff;box-shadow:var(--sh-sm)}
+.names{list-style:none;margin:16px 0 0;display:flex;flex-direction:column;gap:10px;max-height:56vh;overflow:auto;padding:2px 6px 6px 2px}
+.nrow{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--white);border:2.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.nrow .no{font-size:22px;font-weight:800;min-width:36px;text-align:right}
+.nrow .nm{flex:1;min-width:0;font-size:20px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nrow .res{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:15px;padding:5px 12px;border-radius:999px;white-space:nowrap;border:2.5px solid var(--ink)}
+.nrow .res.none{border:0;color:var(--muted);font-weight:600;padding:5px 4px}
+.nrow .res.wait{background:var(--ink);color:var(--lime);transform:rotate(-2deg)}
+.nrow.is-turn{background:var(--lime)}
 .nrow.fresh{animation:pop .5s cubic-bezier(.2,1.5,.4,1)}
-.mini{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;font-size:15px;flex:none}
-.mini:hover{color:var(--text);background:#222b4d}
+.mini{width:32px;height:32px;border-radius:10px;border:2.5px solid var(--ink);background:var(--white);cursor:pointer;font-size:15px;font-weight:800;flex:none}
+.mini:hover{background:var(--yellow)}
 .mini:disabled{opacity:.35;cursor:not-allowed}
-.empty{color:var(--muted);text-align:center;padding:28px 10px;border:2px dashed var(--line);border-radius:14px;font-size:15px;line-height:1.6}
-.names-actions{margin-top:14px}
+.empty{text-align:center;padding:30px 10px;border:3px dashed var(--ink);border-radius:14px;font-size:16px;font-weight:600;line-height:1.6;background:var(--paper)}
+.names-actions{margin-top:16px}
 
-/* presentation mode */
-body.presenting{--stage:min(100%,74vh,900px)}
-body.presenting .settings-col,body.presenting .add-card,body.presenting .names-actions,body.presenting .mini{display:none}
+/* ---------- presentation ---------- */
+body.presenting{--stage:min(100%,70vh,880px)}
+body.presenting .settings-col,body.presenting .add-row,body.presenting .names-actions,body.presenting .mini{display:none}
+body.presenting .names{margin-top:0}
 
-/* modal */
-.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:rgba(5,8,20,.72);backdrop-filter:blur(5px);animation:fade .2s}
-.modal-card{width:min(100%,480px);background:var(--card);border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:pop .4s cubic-bezier(.2,1.4,.4,1)}
-.modal-top{padding:46px 24px 50px;text-align:center}
-.kicker{margin:0 0 10px;font-size:19px;font-weight:700;opacity:.92}
-.modal-top h2{margin:0;font-size:clamp(40px,10vw,64px);line-height:1.05;letter-spacing:-1px}
-.sub{margin:12px 0 0;font-size:15px;font-weight:600;opacity:.8;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;padding:16px 20px 20px}
-@keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+/* ---------- modal ---------- */
+.modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:rgba(17,17,17,.55);animation:fade .2s}
+.modal-card{width:min(100%,480px);background:var(--white);border:var(--b);border-radius:24px;overflow:hidden;box-shadow:9px 9px 0 var(--ink);animation:pop .45s cubic-bezier(.2,1.5,.4,1)}
+.modal-top{padding:44px 24px 48px;text-align:center;border-bottom:var(--b)}
+.kicker{margin:0 0 10px;font-size:20px;font-weight:800}
+.modal-top h2{margin:0;font-size:clamp(44px,11vw,70px);line-height:1;letter-spacing:-1.5px;font-weight:800}
+.sub{margin:14px 0 0;font-size:14px;font-weight:700;opacity:.75;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.modal-actions{display:flex;justify-content:flex-end;padding:18px 20px 20px}
+.modal-actions .btn{font-size:16px;padding:11px 18px}
+@keyframes pop{from{transform:scale(.6) rotate(-6deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 @keyframes fade{from{opacity:0}}
 
 #confetti{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:60}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:#fff;color:#111;font-weight:600;font-size:14px;
-  padding:10px 16px;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transition:.25s;z-index:70;pointer-events:none}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--lime);font-weight:800;font-size:15px;
+  padding:11px 18px;border-radius:999px;border:3px solid var(--lime);opacity:0;transition:.25s;z-index:70;pointer-events:none;max-width:92vw;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media (max-width:900px){
-  :root{--stage:min(100%,66vh)}
-  main{grid-template-columns:1fr;grid-template-areas:"wheel" "names" "settings";padding:4px 14px 28px;gap:30px}
-  .col-title{font-size:26px}
+  :root{--stage:min(100%,64vh)}
+  main{grid-template-columns:1fr;grid-template-areas:"wheel" "names" "settings";padding:20px 14px 36px;gap:34px}
   .names{max-height:none}
 }
+@media (prefers-reduced-motion:reduce){.marquee .track{animation:none}}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="brand">🎁 Roda Warna Tukar Hadiah</div>
+  <div class="brand">🎁 Rode Warne Tuka Hadioh <span class="sticker">ganu kite 🐢</span></div>
   <div class="tools">
     <button class="icon-btn" id="soundBtn" title="Bunyi">🔊</button>
-    <button class="icon-btn" id="fsBtn" title="Skrin penuh / mod persembahan">⛶</button>
+    <button class="icon-btn" id="fsBtn" title="Skrin penoh">⛶</button>
   </div>
 </header>
+<div class="marquee" aria-hidden="true"><div class="track" id="marquee"></div></div>
 
 <main>
-  <!-- ========== RODA ========== -->
-  <section class="col wheel-col">
-    <h2 class="col-title">Roda</h2>
+  <!-- ========== RODE ========== -->
+  <section class="wheel-col">
+    <h2 class="col-title"><span class="hl pink">Rode 🎡</span></h2>
     <div class="turn" id="turnLabel"></div>
     <div class="wheel-wrap" id="wheelWrap">
       <div class="pointer">
-        <svg viewBox="0 0 44 52" aria-hidden="true">
-          <path d="M22 50 L4 14 A20 20 0 0 1 40 14 Z" fill="#ffffff"/>
-          <circle cx="22" cy="17" r="6" fill="#0091FF"/>
+        <svg viewBox="0 0 46 54" aria-hidden="true">
+          <path d="M23 52 L5 15 A20 20 0 0 1 41 15 Z" fill="#111" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
+          <circle cx="23" cy="18" r="7" fill="#FF5FA2" stroke="#fff" stroke-width="2"/>
         </svg>
       </div>
-      <canvas aria-label="Roda warna"></canvas>
+      <canvas aria-label="Rode warne"></canvas>
       <button class="hub" id="hub">PUSING</button>
       <div class="lock hidden" id="lock"></div>
     </div>
-    <button class="btn primary spin-btn" id="spinBtn">🎡 Pusing</button>
+    <button class="btn spin-btn" id="spinBtn">🌀 Pusing</button>
   </section>
 
   <section class="settings-col">
     <div class="card settings">
       <div>
-        <p class="label">Warna dalam roda <span style="font-weight:400">(klik untuk on/off)</span></p>
+        <p class="label">Warne kak rode <span>(klik nok on/off)</span></p>
         <div class="chips" id="chips"></div>
       </div>
       <div class="btn-row">
-        <button class="btn" id="shuffleColorsBtn" data-lock>🔀 Kocok susunan warna</button>
-        <button class="btn" id="allColorsBtn" data-lock>✅ Semua warna</button>
+        <button class="btn" id="shuffleColorsBtn" data-lock>🔀 Kocok warne</button>
+        <button class="btn" id="allColorsBtn" data-lock>✅ Semue warne</button>
       </div>
-      <label class="switch"><input type="checkbox" id="uniqueChk" data-lock> Satu warna untuk satu orang sahaja (warna yang dah diambil dibuang dari roda)</label>
+      <label class="switch"><input type="checkbox" id="uniqueChk" data-lock> Sorang satu warne je (warne hok doh kene ambik, buang dari rode)</label>
       <div>
-        <p class="label">Tempoh pusingan: <b id="durLabel">5</b> saat</p>
+        <p class="label">Lame pusing: <b id="durLabel">5</b> saat</p>
         <input type="range" id="duration" min="2" max="12" value="5">
       </div>
     </div>
   </section>
 
-  <!-- ========== NAMA ========== -->
-  <section class="col names-col">
-    <h2 class="col-title">Nama <small id="nameCount">0</small></h2>
-    <div class="card add-card">
+  <!-- ========== NAME ========== -->
+  <section class="names-col">
+    <h2 class="col-title"><span class="hl sky">Name 📝</span><small id="nameCount">0</small></h2>
+    <div class="card">
       <div class="add-row">
-        <input type="text" id="nameInput" maxlength="40" placeholder="Taip nama, tekan Enter…" autocomplete="off" enterkeyhint="done">
-        <button class="btn primary" id="addBtn" data-lock>Tambah</button>
+        <input type="text" id="nameInput" maxlength="40" placeholder="Taip name, tekang Enter…" autocomplete="off" enterkeyhint="done">
+        <button class="btn lime" id="addBtn" data-lock>Tamboh</button>
       </div>
       <ol class="names" id="names"></ol>
       <div class="btn-row names-actions" id="namesActions">
-        <button class="btn" id="copyBtn">📋 Salin keputusan</button>
-        <button class="btn" id="resetBtn" data-lock>↺ Main semula</button>
-        <button class="btn" id="clearBtn" data-lock>🗑️ Kosongkan</button>
+        <button class="btn" id="copyBtn">📋 Saling keputusang</button>
+        <button class="btn" id="resetBtn" data-lock>↺ Maing semule</button>
+        <button class="btn" id="clearBtn" data-lock>🗑️ Kosongkang</button>
       </div>
     </div>
   </section>
@@ -197,7 +213,7 @@ body.presenting .settings-col,body.presenting .add-card,body.presenting .names-a
       <p class="sub" id="winSub"></p>
     </div>
     <div class="modal-actions">
-      <button class="btn primary" id="closeBtn">OK</button>
+      <button class="btn pink" id="closeBtn">OK</button>
     </div>
   </div>
 </div>
@@ -209,12 +225,51 @@ body.presenting .settings-col,body.presenting .add-card,body.presenting .names-a
 (() => {
 'use strict';
 
+/* =====================================================================
+   SEMUA AYAT KAK SINI — senang nok tukor ikut loghat kampung mung 😎
+   ===================================================================== */
+const T = {
+  marquee: '🎁 TUKA HADIOH ✦ pusing je, jangang pikir banyok ✦ warne mung, hadioh mung ✦ no cap 🧢 ✦ slay gok 💅 ✦ ganu kite 🐢 ✦ ',
+  turn: '🫵 Gilirang',
+  turnNone: 'Belum ade name lagi 🥲',
+  turnDone: 'Semue doh siap ✅',
+  spin: '🌀 Pusing',
+  spinFor: name => `🌀 Pusing la, ${name}!`,
+  lockNoNames: ['🔒 Bubuh name dulu weh', 'Taip name, tekang Enter'],
+  lockDone: ['🎉 Semue doh dapak warne!', 'Tamboh name lagi ke tekang ↺ Maing semule'],
+  lockNoLeft: ['😅 Warne doh habih', 'Tamboh warne ke matikang “sorang satu warne”'],
+  lockNoColors: ['🎨 Rode kosong', 'Bubuh sekurang-kurangnye satu warne'],
+  emptyList: 'Dok ade name lagi 🥲<br>Taip name kak atah, tekang <b>Enter</b> 👆',
+  waiting: '👀 gilirang',
+  redoTitle: 'Pusing semule untuk name ning',
+  delTitle: 'Buang name ning',
+  chipOn: 'Klik nok buang dari rode',
+  chipOff: 'Klik nok bubuh balik kak rode',
+  toastTypeName: 'Taip name dulu weh 😤',
+  toastDupOne: 'Name tu doh ade lah 🙄',
+  toastDupMany: n => `${n} name doh ade, dok tamboh`,
+  toastAdded: n => `${n} name doh masuk ✅`,
+  toastCopied: 'Doh saling! Paste kak WhatsApp 📲',
+  toastNeedName: 'Bubuh name dulu weh',
+  toastAllDone: 'Semue doh dapak warne 💅',
+  toastNoColor: 'Rode kosong, bubuh warne dulu',
+  confirmReset: 'Kosongkang semue warne & maing semule? (Name kekal)',
+  confirmClear: 'Buang semue name ke? 😳',
+  winKicker: name => `🎉 ${name} dapak warne`,
+  next: name => `Lepah ning: ${name} ➜`,
+  finished: 'Siap! Slay 💅',
+  copyHeader: '🎁 Tuka Hadioh — Warne Tema',
+  soundOn: 'Bunyi: on 🔊',
+  soundOff: 'Bunyi: off 🔇'
+};
+
 /* ================= helpers ================= */
 const $ = s => document.querySelector(s);
 const TAU = Math.PI * 2;
 const POINTER = -Math.PI / 2;            // pointer at the top of the wheel
 const STORE = 'rodaWarna.v1';
-const FONT = '-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",Roboto,Arial,sans-serif';
+const FONT = '"Bricolage Grotesque",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif';
+const INK = '#111111';
 
 const rand = (() => {
   const c = window.crypto;
@@ -244,15 +299,14 @@ const COLORS = [
 ];
 const BY_KEY = Object.fromEntries(COLORS.map(c => [c.key, c]));
 const GOLD_CSS = 'linear-gradient(135deg,#A9791C 0%,#F9E08B 38%,#E6C15A 58%,#B8892A 100%)';
-// pairs that look too alike to sit next to each other on the wheel
 const SIMILAR = new Set(['red|pink','red|orange','orange|yellow','yellow|gold','orange|gold','brown|gold','brown|orange','pink|purple','black|brown']);
 const alike = (a, b) => SIMILAR.has(a + '|' + b) || SIMILAR.has(b + '|' + a);
 
 function hexToRgb(hex) { const n = parseInt(hex.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
 function inkFor(c) {
-  if (c.gold) return '#3b2a05';
+  if (c.gold) return '#2b1d00';
   const [r, g, b] = hexToRgb(c.hex);
-  return (r * 299 + g * 587 + b * 114) / 1000 >= 150 ? '#14161f' : '#ffffff';
+  return (r * 299 + g * 587 + b * 114) / 1000 >= 150 ? INK : '#ffffff';
 }
 const swatch = c => c.gold ? GOLD_CSS : c.hex;
 
@@ -363,12 +417,12 @@ class Wheel {
     const ctx = this.ctx, size = this.size;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     ctx.clearRect(0, 0, size, size);
-    const c = size / 2, r = c - 5;
+    const c = size / 2, r = c - 6;
     const items = wheelItems();
     if (!items.length) {
       ctx.beginPath(); ctx.arc(c, c, r, 0, TAU);
-      ctx.fillStyle = '#1f2747'; ctx.fill();
-      ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
+      ctx.fillStyle = '#efe6d3'; ctx.fill();
+      ctx.lineWidth = 6; ctx.strokeStyle = INK; ctx.stroke();
       return;
     }
     const n = items.length, arc = TAU / n;
@@ -383,11 +437,11 @@ class Wheel {
         ctx.fillStyle = g;
       } else ctx.fillStyle = it.hex;
       ctx.fill();
-      if (n > 1) { ctx.lineWidth = 1.5; ctx.strokeStyle = 'rgba(20,22,31,.3)'; ctx.stroke(); }
+      if (n > 1) { ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke(); }
     }
-    const fs = Math.min(r * 0.085, r * 0.75 * arc * 0.55);
+    const fs = Math.min(r * 0.09, r * 0.75 * arc * 0.55);
     if (fs >= 7) {
-      ctx.font = `700 ${fs}px ${FONT}`;
+      ctx.font = `800 ${fs}px ${FONT}`;
       ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
       for (let i = 0; i < n; i++) {
         ctx.save();
@@ -398,10 +452,8 @@ class Wheel {
         ctx.restore();
       }
     }
-    const g = ctx.createRadialGradient(c, c, r * 0.25, c, c, r);
-    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.86, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.18)');
-    ctx.beginPath(); ctx.arc(c, c, r, 0, TAU); ctx.fillStyle = g; ctx.fill();
-    ctx.lineWidth = 5; ctx.strokeStyle = '#fff'; ctx.stroke();
+    ctx.beginPath(); ctx.arc(c, c, r, 0, TAU);
+    ctx.lineWidth = 6; ctx.strokeStyle = INK; ctx.stroke();
   }
   segAt(n) { return Math.floor(mod(POINTER - this.rotation, TAU) / (TAU / n)) % n; }
   flick() { const p = this.pointer; p.classList.remove('flick'); void p.offsetWidth; p.classList.add('flick'); }
@@ -444,6 +496,8 @@ const soundBtn = $('#soundBtn'), fsBtn = $('#fsBtn');
 let busy = false;
 let freshIdx = -1;
 
+$('#marquee').textContent = T.marquee.repeat(6);
+
 /* ================= rendering ================= */
 let toastTimer;
 function toast(msg) {
@@ -461,7 +515,7 @@ async function copy(text, msg) {
     try { document.execCommand('copy'); } catch (_) {}
     ta.remove();
   }
-  toast(msg || 'Disalin');
+  toast(msg);
 }
 
 function renderChips() {
@@ -472,7 +526,7 @@ function renderChips() {
     const b = document.createElement('button');
     b.className = 'cchip' + (state.enabled[k] ? '' : ' off') + (state.unique && used.has(k) ? ' used' : '');
     b.dataset.lock = '';
-    b.title = state.enabled[k] ? 'Klik untuk buang dari roda' : 'Klik untuk masukkan ke roda';
+    b.title = state.enabled[k] ? T.chipOn : T.chipOff;
     const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = swatch(c);
     b.append(dot, `${c.name} ${c.emoji}`);
     b.onclick = () => {
@@ -490,7 +544,7 @@ function renderNames() {
   $('#nameCount').textContent = state.names.length;
   $('#namesActions').classList.toggle('hidden', !state.names.length);
   if (!state.names.length) {
-    namesEl.innerHTML = '<li class="empty">Belum ada nama.<br>Taip nama di atas dan tekan <b>Enter</b> 👆</li>';
+    namesEl.innerHTML = `<li class="empty">${T.emptyList}</li>`;
     return;
   }
   const ti = turnIndex();
@@ -506,18 +560,18 @@ function renderNames() {
       res.style.background = swatch(c);
       res.style.color = inkFor(c);
       res.textContent = `${c.name} ${c.emoji}`;
-    } else if (i === ti) { res.className = 'res wait'; res.textContent = '← giliran'; }
+    } else if (i === ti) { res.className = 'res wait'; res.textContent = T.waiting; }
     else { res.className = 'res none'; res.textContent = '—'; }
     li.append(no, nm, res);
     if (n.color) {
       const redo = document.createElement('button');
-      redo.className = 'mini'; redo.textContent = '↺'; redo.title = 'Kosongkan warna (pusing semula)';
+      redo.className = 'mini'; redo.textContent = '↺'; redo.title = T.redoTitle;
       redo.disabled = busy;
       redo.onclick = () => { if (busy) return; n.color = null; save(); renderAll(); };
       li.append(redo);
     }
     const del = document.createElement('button');
-    del.className = 'mini'; del.textContent = '×'; del.title = 'Buang nama';
+    del.className = 'mini'; del.textContent = '×'; del.title = T.delTitle;
     del.disabled = busy;
     del.onclick = () => { if (busy) return; state.names.splice(i, 1); save(); renderAll(); };
     li.append(del);
@@ -530,13 +584,17 @@ function renderNames() {
 
 function updateTurn() {
   const ti = turnIndex(), items = wheelItems();
-  let msg = '';
-  if (!state.names.length) msg = '🔒 Masukkan nama dulu<span>Taip nama dalam senarai Nama, tekan Enter</span>';
-  else if (ti < 0) msg = '🎉 Semua nama dah dapat warna<span>Tambah nama lagi atau tekan ↺ Main semula</span>';
-  else if (!items.length) msg = state.unique && COLORS.some(c => state.enabled[c.key])
-    ? '😅 Warna dah habis<span>Tambah warna atau matikan “satu warna satu orang”</span>'
-    : '🎨 Tiada warna dalam roda<span>Hidupkan sekurang-kurangnya satu warna</span>';
-  lock.innerHTML = msg ? `<div>${msg}</div>` : '';
+  let msg = null;
+  if (!state.names.length) msg = T.lockNoNames;
+  else if (ti < 0) msg = T.lockDone;
+  else if (!items.length) msg = state.unique && COLORS.some(c => state.enabled[c.key]) ? T.lockNoLeft : T.lockNoColors;
+  lock.textContent = '';
+  if (msg) {
+    const box = document.createElement('div');
+    const sub = document.createElement('span'); sub.textContent = msg[1];
+    box.append(msg[0], sub);
+    lock.append(box);
+  }
   lock.classList.toggle('hidden', !msg);
   hub.style.visibility = msg ? 'hidden' : '';
 
@@ -546,11 +604,11 @@ function updateTurn() {
   label.textContent = '';
   if (ti >= 0) {
     const b = document.createElement('b'); b.textContent = state.names[ti].name;
-    label.append('Giliran: ', b);
-    spinBtn.textContent = `🎡 Pusing untuk ${state.names[ti].name}`;
+    label.append(T.turn + ' ', b);
+    spinBtn.textContent = T.spinFor(state.names[ti].name);
   } else {
-    label.textContent = state.names.length ? 'Semua dah siap ✅' : 'Belum ada nama';
-    spinBtn.textContent = '🎡 Pusing';
+    label.textContent = state.names.length ? T.turnDone : T.turnNone;
+    spinBtn.textContent = T.spin;
   }
 }
 
@@ -567,7 +625,7 @@ function setBusy(b) {
 /* ================= names ================= */
 function addNames(list) {
   let added = 0, dup = 0;
-  for (let raw of list) {
+  for (const raw of list) {
     const name = raw.trim().slice(0, 40);
     if (!name) continue;
     if (state.names.some(n => n.name.toLowerCase() === name.toLowerCase())) { dup++; continue; }
@@ -575,14 +633,14 @@ function addNames(list) {
     freshIdx = state.names.length - 1;
     added++;
   }
-  if (dup) toast(dup === 1 ? 'Nama tu dah ada dalam senarai' : `${dup} nama dah ada, tak ditambah`);
+  if (dup) toast(dup === 1 ? T.toastDupOne : T.toastDupMany(dup));
   if (added) { save(); renderAll(); }
   return added;
 }
 function addFromInput() {
   if (busy) return;
   const v = nameInput.value;
-  if (!v.trim()) { toast('Taip nama dulu'); nameInput.focus(); return; }
+  if (!v.trim()) { toast(T.toastTypeName); nameInput.focus(); return; }
   addNames([v]);
   nameInput.value = '';
   nameInput.focus();
@@ -595,23 +653,23 @@ nameInput.addEventListener('paste', e => {
   if (/[\r\n\t]/.test(text)) {                       // pasted a column from Excel / a list
     e.preventDefault();
     const n = addNames(text.split(/[\r\n\t]+/));
-    if (n) toast(`${n} nama ditambah`);
+    if (n) toast(T.toastAdded(n));
   }
 });
 $('#addBtn').onclick = addFromInput;
 
 $('#copyBtn').onclick = () => {
   const lines = state.names.map((n, i) => `${i + 1}. ${n.name} — ${n.color ? BY_KEY[n.color].name + ' ' + BY_KEY[n.color].emoji : '-'}`);
-  copy(lines.join('\n'), 'Keputusan disalin — boleh paste dalam WhatsApp');
+  copy([T.copyHeader, '', ...lines].join('\n'), T.toastCopied);
 };
 $('#resetBtn').onclick = () => {
   if (!state.names.some(n => n.color)) return;
-  if (!confirm('Kosongkan semua warna dan main semula? (Nama kekal)')) return;
+  if (!confirm(T.confirmReset)) return;
   state.names.forEach(n => { n.color = null; });
   save(); renderAll();
 };
 $('#clearBtn').onclick = () => {
-  if (!confirm('Buang semua nama?')) return;
+  if (!confirm(T.confirmClear)) return;
   state.names = [];
   save(); renderAll(); nameInput.focus();
 };
@@ -628,9 +686,9 @@ durInput.oninput = () => { state.duration = +durInput.value; $('#durLabel').text
 function spin() {
   if (busy || !modal.classList.contains('hidden')) return;
   const ti = turnIndex();
-  if (!state.names.length) { toast('Masukkan nama dulu'); nameInput.focus(); return; }
-  if (ti < 0) { toast('Semua nama dah dapat warna'); return; }
-  if (!wheelItems().length) { toast('Tiada warna dalam roda'); return; }
+  if (!state.names.length) { toast(T.toastNeedName); nameInput.focus(); return; }
+  if (ti < 0) { toast(T.toastAllDone); return; }
+  if (!wheelItems().length) { toast(T.toastNoColor); return; }
   audio();
   setBusy(true);
   wheel.spin(state.duration * 1000).then(c => {
@@ -640,7 +698,7 @@ function spin() {
     setBusy(false);
     renderNames(); renderChips(); updateTurn();
     winSound();
-    confetti(c.gold ? ['#F9E08B', '#E6C15A', '#B8892A', '#ffffff', '#D4AF37'] : [c.hex, c.hex, c.hex, '#ffffff', '#F9E08B']);
+    confetti(c.gold ? ['#F9E08B', '#E6C15A', '#B8892A', '#111111', '#FF5FA2'] : [c.hex, c.hex, c.hex, '#111111', '#C8FF4D', '#FF5FA2']);
     showModal(state.names[ti].name, c);
   });
 }
@@ -653,17 +711,17 @@ function showModal(name, c) {
   const top = $('#modalTop');
   top.style.background = swatch(c);
   top.style.color = inkFor(c);
-  $('#winKicker').textContent = `🎉 ${name} dapat warna`;
+  $('#winKicker').textContent = T.winKicker(name);
   $('#winTitle').textContent = `${c.name} ${c.emoji}`;
   $('#winSub').textContent = c.hex;
   const next = turnIndex();
-  closeBtn.textContent = next >= 0 ? `Seterusnya: ${state.names[next].name} ➜` : 'Siap 🎉';
+  closeBtn.textContent = next >= 0 ? T.next(state.names[next].name) : T.finished;
   modal.classList.remove('hidden');
   closeBtn.focus();
 }
 function closeModal() {
   modal.classList.add('hidden');
-  wheel.draw();                      // colour may have left the wheel ("satu warna satu orang")
+  wheel.draw();                      // colour may have left the wheel ("sorang satu warne")
   updateTurn();
 }
 closeBtn.onclick = closeModal;
@@ -714,7 +772,7 @@ function confetti(colors) {
 /* ================= misc ================= */
 function renderSound() {
   soundBtn.textContent = state.sound ? '🔊' : '🔇';
-  soundBtn.title = state.sound ? 'Bunyi: hidup' : 'Bunyi: mati';
+  soundBtn.title = state.sound ? T.soundOn : T.soundOff;
 }
 soundBtn.onclick = () => { state.sound = !state.sound; renderSound(); save(); };
 
@@ -744,6 +802,7 @@ durInput.value = state.duration; $('#durLabel').textContent = state.duration;
 renderSound();
 renderAll();
 wheel.resize();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => wheel.draw());   // redraw once the web font arrives
 })();
 </script>
 </body>

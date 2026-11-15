@@ -1,4 +1,6 @@
-# 🎁 Roda Warna Tukar Hadiah
+# 🎁 Rode Warne Tuka Hadioh
+
+Gaya Gen Z, loghat Terengganu 🐢 — semua ayat UI ada dalam objek `T` dalam `index.html`, senang nok tukor.
 
 Masukkan nama dulu, kemudian pusing roda — setiap nama (ikut giliran 1, 2, 3…) dapat satu warna tema untuk tukar hadiah.
 
@@ -10,4 +12,4 @@ Masukkan nama dulu, kemudian pusing roda — setiap nama (ikut giliran 1, 2, 3�
 
 🔗 Live: https://mohdfarez.github.io/roda-rawak/
 
-Tiada library luar — `index.html` boleh dibuka terus dalam browser (offline).
+Tiada library luar (cuma font Bricolage Grotesque dari Google Fonts; kalau offline, guna font sistem).
