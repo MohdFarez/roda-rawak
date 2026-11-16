@@ -10,12 +10,12 @@
 <style>
 :root{
   --ink:#111111;--paper:#FFF7E8;--white:#ffffff;
-  --lime:#C8FF4D;--pink:#FF5FA2;--purple:#7C5CFF;--yellow:#FFE14D;--sky:#7CC8FF;
+  --lime:#C8FF4D;--pink:#FF5FA2;--yellow:#FFE14D;--sky:#7CC8FF;
   --muted:#6b6357;
   --b:3px solid var(--ink);--sh:5px 5px 0 var(--ink);--sh-sm:3px 3px 0 var(--ink);
   --r:18px;
   --font:"Bricolage Grotesque",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-  --stage:min(100%,60vh,540px);
+  --stage:min(100%,58vh,520px);
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -36,15 +36,16 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;pa
 @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* ---------- layout ---------- */
-main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"wheel names" "settings names";gap:26px 34px;padding:24px 22px 40px;align-items:start}
-.wheel-col{grid-area:wheel;display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
-.names-col{grid-area:names;display:flex;flex-direction:column;gap:14px;min-width:0}
-.settings-col{grid-area:settings;display:flex;justify-content:center}
-.col-title{margin:0;font-size:clamp(30px,4vw,42px);font-weight:800;letter-spacing:-1px;line-height:1}
+main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px 34px;padding:24px 22px 40px;align-items:start}
+.wheel-col{display:flex;flex-direction:column;align-items:center;gap:14px;min-width:0}
+.list-col{display:flex;flex-direction:column;gap:14px;min-width:0}
+.col-title{margin:0;font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-1px;line-height:1;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .col-title .hl{display:inline-block;padding:2px 12px 4px;border:var(--b);border-radius:12px;box-shadow:var(--sh-sm);transform:rotate(-2deg)}
 .col-title .hl.pink{background:var(--pink)}
 .col-title .hl.sky{background:var(--sky)}
-.col-title small{font-size:15px;font-weight:800;margin-left:10px;vertical-align:middle;background:var(--yellow);border:var(--b);padding:2px 10px;border-radius:999px;letter-spacing:0}
+.badge{font-size:15px;font-weight:800;background:var(--yellow);border:var(--b);padding:2px 10px;border-radius:999px;letter-spacing:0}
+.live{font-size:13px;font-weight:800;background:var(--white);border:2.5px solid var(--ink);padding:3px 10px;border-radius:999px;letter-spacing:0}
+.live.off{background:#ffd6d6}
 
 .card{background:var(--white);border:var(--b);border-radius:var(--r);box-shadow:var(--sh);padding:16px;width:100%}
 .btn{border:var(--b);background:var(--white);padding:9px 14px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:var(--sh-sm);transition:transform .1s,box-shadow .1s}
@@ -53,72 +54,54 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-templ
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.lime{background:var(--lime)}
 .btn.pink{background:var(--pink)}
-.btn-row{display:flex;gap:10px;flex-wrap:wrap}
-.label{font-size:14px;font-weight:700;margin:0 0 10px}
-.label span{font-weight:500;color:var(--muted)}
 
-/* ---------- turn + spin ---------- */
-.turn{font-size:19px;font-weight:600;text-align:center;min-height:30px}
-.turn b{font-size:24px;font-weight:800;background:var(--lime);border:var(--b);border-radius:10px;padding:0 10px;margin-left:4px;display:inline-block;transform:rotate(-1.5deg)}
-.spin-btn{min-width:250px;font-size:19px;font-weight:800;padding:14px 28px;border-radius:999px;background:var(--pink);box-shadow:var(--sh)}
+/* ---------- status + spin form ---------- */
+.status{font-size:19px;font-weight:700;text-align:center;min-height:30px}
+.status b{font-size:22px;font-weight:800;background:var(--lime);border:var(--b);border-radius:10px;padding:0 10px;display:inline-block;transform:rotate(-1.5deg)}
+.spin-form{display:flex;gap:10px;width:var(--stage);flex-wrap:wrap}
+.spin-form input{flex:1 1 200px;min-width:0;background:var(--white);border:var(--b);border-radius:14px;padding:13px 16px;font-size:18px;font-weight:700;outline:none;box-shadow:var(--sh-sm)}
+.spin-form input:focus{background:#fffef5}
+.spin-form input:disabled{background:#efe6d3;opacity:.8}
+.spin-btn{flex:1 1 150px;font-size:19px;font-weight:800;padding:13px 22px;border-radius:14px;background:var(--pink);box-shadow:var(--sh)}
 .spin-btn:active:not(:disabled){transform:translate(5px,5px)}
 
 /* ---------- wheel ---------- */
 .wheel-wrap{position:relative;width:var(--stage);aspect-ratio:1/1;margin-top:14px;container-type:inline-size}
-.wheel-wrap canvas{display:block;width:100%;height:100%;border-radius:50%;cursor:pointer;filter:drop-shadow(7px 7px 0 var(--ink))}
+.wheel-wrap canvas{display:block;width:100%;height:100%;border-radius:50%;filter:drop-shadow(7px 7px 0 var(--ink))}
 .pointer{position:absolute;top:-20px;left:50%;width:46px;height:54px;margin-left:-23px;z-index:4;transform-origin:23px 20px;pointer-events:none}
 .pointer svg{width:100%;height:100%;display:block;overflow:visible}
 .pointer.flick{animation:flick .14s ease-out}
 @keyframes flick{0%{transform:rotate(0)}35%{transform:rotate(-16deg)}100%{transform:rotate(0)}}
-.hub{position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1/1;transform:translate(-50%,-50%);border-radius:50%;border:4px solid var(--ink);padding:0;z-index:2;
-  background:var(--lime);color:var(--ink);font-weight:800;letter-spacing:.04em;font-size:13px;font-size:clamp(10px,3.4cqi,21px);cursor:pointer;box-shadow:4px 4px 0 var(--ink);transition:transform .12s}
-.hub:hover:not(:disabled){transform:translate(-50%,-50%) scale(1.06) rotate(-4deg)}
-.hub:disabled{cursor:not-allowed}
+.hub{position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1/1;transform:translate(-50%,-50%);border-radius:50%;border:4px solid var(--ink);z-index:2;
+  background:var(--lime);display:grid;place-items:center;font-size:13px;font-size:clamp(18px,7cqi,44px);box-shadow:4px 4px 0 var(--ink);pointer-events:none}
 .lock{position:absolute;inset:0;border-radius:50%;z-index:3;display:grid;place-items:center;text-align:center;padding:16%;
-  background:rgba(255,247,232,.84);font-weight:800;font-size:clamp(16px,5cqi,28px);line-height:1.25;cursor:default}
+  background:rgba(255,247,232,.86);font-weight:800;font-size:clamp(16px,5cqi,28px);line-height:1.25}
 .lock span{display:block;font-size:.6em;font-weight:600;color:var(--muted);margin-top:8px}
 
-/* ---------- settings ---------- */
-.settings{display:flex;flex-direction:column;gap:18px;max-width:560px}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.cchip{display:inline-flex;align-items:center;gap:7px;padding:6px 12px 6px 8px;border-radius:999px;border:2.5px solid var(--ink);background:var(--white);font-size:13.5px;font-weight:700;cursor:pointer;box-shadow:2px 2px 0 var(--ink);transition:transform .1s}
-.cchip:active{transform:translate(2px,2px);box-shadow:none}
-.cchip .dot{width:15px;height:15px;border-radius:50%;flex:none;border:2px solid var(--ink)}
-.cchip.off{opacity:.4;border-style:dashed;text-decoration:line-through;box-shadow:none}
-.cchip.used{background:#ece5d6;opacity:.6;text-decoration:line-through;box-shadow:none}
-.note{margin:0;font-size:14px;font-weight:700;background:var(--yellow);border:2.5px solid var(--ink);border-radius:12px;padding:8px 12px}
-input[type=range]{width:100%;accent-color:var(--pink)}
-
-/* ---------- names ---------- */
-.add-row{display:flex;gap:10px}
-.add-row input{flex:1;min-width:0;background:var(--paper);border:var(--b);border-radius:12px;padding:12px 14px;font-size:17px;font-weight:600;outline:none}
-.add-row input:focus{background:#fff;box-shadow:var(--sh-sm)}
-.names{list-style:none;margin:16px 0 0;display:flex;flex-direction:column;gap:10px;max-height:56vh;overflow:auto;padding:2px 6px 6px 2px}
-.nrow{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--white);border:2.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
-.nrow .no{font-size:22px;font-weight:800;min-width:36px;text-align:right}
-.nrow .nm{flex:1;min-width:0;font-size:20px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.nrow .res{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:15px;padding:5px 12px;border-radius:999px;white-space:nowrap;border:2.5px solid var(--ink)}
-.nrow .res.none{border:0;color:var(--muted);font-weight:600;padding:5px 4px}
-.nrow .res.wait{background:var(--ink);color:var(--lime);transform:rotate(-2deg)}
-.nrow.is-turn{background:var(--lime)}
-.nrow.fresh{animation:pop .5s cubic-bezier(.2,1.5,.4,1)}
-.mini{width:32px;height:32px;border-radius:10px;border:2.5px solid var(--ink);background:var(--white);cursor:pointer;font-size:15px;font-weight:800;flex:none}
-.mini:hover{background:var(--yellow)}
-.mini:disabled{opacity:.35;cursor:not-allowed}
+/* ---------- family list ---------- */
+.picks{list-style:none;margin:0;display:flex;flex-direction:column;gap:10px;max-height:62vh;overflow:auto;padding:2px 6px 6px 2px}
+.prow{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:14px;background:var(--white);border:2.5px solid var(--ink);box-shadow:3px 3px 0 var(--ink)}
+.prow .no{font-size:22px;font-weight:800;min-width:36px;text-align:right}
+.prow .nm{flex:1;min-width:0;font-size:20px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prow .me{font-size:12px;font-weight:800;background:var(--ink);color:var(--lime);border-radius:999px;padding:3px 8px;white-space:nowrap;transform:rotate(-3deg)}
+.prow .res{display:inline-flex;align-items:center;gap:6px;font-weight:800;font-size:15px;padding:5px 12px;border-radius:999px;white-space:nowrap;border:2.5px solid var(--ink)}
+.prow .res.none{border:0;color:var(--muted);font-weight:600;padding:5px 4px}
+.prow.mine{background:#fff3f9}
+.prow.fresh{animation:pop .55s cubic-bezier(.2,1.5,.4,1)}
 .empty{text-align:center;padding:30px 10px;border:3px dashed var(--ink);border-radius:14px;font-size:16px;font-weight:600;line-height:1.6;background:var(--paper)}
-.names-actions{margin-top:16px}
+.list-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:14px}
+.hint{font-size:13px;font-weight:600;color:var(--muted)}
 
 /* ---------- presentation ---------- */
-body.presenting{--stage:min(100%,70vh,880px)}
-body.presenting .settings-col,body.presenting .add-row,body.presenting .names-actions,body.presenting .mini{display:none}
-body.presenting .names{margin-top:0}
+body.presenting{--stage:min(100%,66vh,860px)}
 
 /* ---------- modal ---------- */
 .modal{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:rgba(17,17,17,.55);animation:fade .2s}
 .modal-card{width:min(100%,480px);background:var(--white);border:var(--b);border-radius:24px;overflow:hidden;box-shadow:9px 9px 0 var(--ink);animation:pop .45s cubic-bezier(.2,1.5,.4,1)}
 .modal-top{padding:44px 24px 48px;text-align:center;border-bottom:var(--b)}
-.kicker{margin:0 0 10px;font-size:20px;font-weight:800}
+.kicker{margin:0 0 10px;font-size:20px;font-weight:800;word-break:break-word}
 .modal-top h2{margin:0;font-size:clamp(44px,11vw,70px);line-height:1;letter-spacing:-1.5px;font-weight:800}
+.sub{margin:14px 0 0;font-size:14px;font-weight:700;opacity:.8}
 .modal-actions{display:flex;justify-content:flex-end;padding:18px 20px 20px}
 .modal-actions .btn{font-size:16px;padding:11px 18px}
 @keyframes pop{from{transform:scale(.6) rotate(-6deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
@@ -130,9 +113,9 @@ body.presenting .names{margin-top:0}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 @media (max-width:900px){
-  :root{--stage:min(100%,64vh)}
-  main{grid-template-columns:1fr;grid-template-areas:"wheel" "names" "settings";padding:20px 14px 36px;gap:34px}
-  .names{max-height:none}
+  :root{--stage:min(100%,62vh)}
+  main{grid-template-columns:1fr;padding:20px 14px 36px;gap:34px}
+  .picks{max-height:none}
 }
 @media (prefers-reduced-motion:reduce){.marquee .track{animation:none}}
 </style>
@@ -152,52 +135,32 @@ body.presenting .names{margin-top:0}
   <!-- ========== RODE ========== -->
   <section class="wheel-col">
     <h2 class="col-title"><span class="hl pink">Rode 🎡</span></h2>
-    <div class="turn" id="turnLabel"></div>
+    <div class="status" id="status"></div>
     <div class="wheel-wrap" id="wheelWrap">
-      <div class="pointer">
+      <div class="pointer" id="pointer">
         <svg viewBox="0 0 46 54" aria-hidden="true">
           <path d="M23 52 L5 15 A20 20 0 0 1 41 15 Z" fill="#111" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
           <circle cx="23" cy="18" r="7" fill="#FF5FA2" stroke="#fff" stroke-width="2"/>
         </svg>
       </div>
       <canvas aria-label="Rode warne"></canvas>
-      <button class="hub" id="hub">PUSING</button>
+      <div class="hub">🎁</div>
       <div class="lock hidden" id="lock"></div>
     </div>
-    <button class="btn spin-btn" id="spinBtn">🌀 Pusing</button>
+    <form class="spin-form" id="spinForm" autocomplete="off">
+      <input type="text" id="nameInput" maxlength="40" placeholder="Taip name mung…" enterkeyhint="go" aria-label="Name mung">
+      <button class="btn spin-btn" id="spinBtn" type="submit">🌀 Pusing!</button>
+    </form>
   </section>
 
-  <section class="settings-col">
-    <div class="card settings">
-      <div>
-        <p class="label">Warne kak rode <span>(klik nok on/off)</span></p>
-        <div class="chips" id="chips"></div>
-      </div>
-      <div class="btn-row">
-        <button class="btn" id="shuffleColorsBtn" data-lock>🔀 Kocok warne</button>
-        <button class="btn" id="allColorsBtn" data-lock>✅ Semue warne</button>
-      </div>
-      <p class="note">🔒 Warne hok doh kene ambik terus buang dari rode — dok buleh ulang.</p>
-      <div>
-        <p class="label">Lame pusing: <b id="durLabel">5</b> saat</p>
-        <input type="range" id="duration" min="2" max="12" value="5">
-      </div>
-    </div>
-  </section>
-
-  <!-- ========== NAME ========== -->
-  <section class="names-col">
-    <h2 class="col-title"><span class="hl sky">Name 📝</span><small id="nameCount">0</small></h2>
+  <!-- ========== SENARAI KELUARGA ========== -->
+  <section class="list-col">
+    <h2 class="col-title"><span class="hl sky">Senarai Keluarga 📋</span><span class="badge" id="count">0/11</span><span class="live" id="live">⏳</span></h2>
     <div class="card">
-      <div class="add-row">
-        <input type="text" id="nameInput" maxlength="40" placeholder="Taip name, tekang Enter…" autocomplete="off" enterkeyhint="done">
-        <button class="btn lime" id="addBtn" data-lock>Tamboh</button>
-      </div>
-      <ol class="names" id="names"></ol>
-      <div class="btn-row names-actions" id="namesActions">
+      <ol class="picks" id="picks"></ol>
+      <div class="list-foot">
+        <span class="hint" id="hint">Senarai ning update sendiri 🔄</span>
         <button class="btn" id="copyBtn">📋 Saling keputusang</button>
-        <button class="btn" id="resetBtn" data-lock>↺ Maing semule</button>
-        <button class="btn" id="clearBtn" data-lock>🗑️ Kosongkang</button>
       </div>
     </div>
   </section>
@@ -208,6 +171,7 @@ body.presenting .names{margin-top:0}
     <div class="modal-top" id="modalTop">
       <p class="kicker" id="winKicker"></p>
       <h2 id="winTitle"></h2>
+      <p class="sub hidden" id="winSub"></p>
     </div>
     <div class="modal-actions">
       <button class="btn pink" id="closeBtn">OK</button>
@@ -223,44 +187,44 @@ body.presenting .names{margin-top:0}
 'use strict';
 
 /* =====================================================================
+   DATABASE — URL Web App Google Apps Script (hujung dia /exec)
+   ===================================================================== */
+const DEFAULT_API = 'https://script.google.com/macros/s/AKfycbyQ_HhfIwYSMXi-QvbLpCSeC7a291kDqoGadbRF9sunCU78jSErEOyaYnN-i9KOV-to/exec';
+
+/* =====================================================================
    SEMUA AYAT KAK SINI — senang nok tukor ikut loghat kampung mung 😎
    ===================================================================== */
 const T = {
   marquee: '🎁 TUKA HADIOH ✦ pusing je, jangang pikir banyok ✦ warne mung, hadioh mung ✦ no cap 🧢 ✦ slay gok 💅 ✦ ganu kite 🐢 ✦ ',
-  turn: '🫵 Gilirang',
-  turnNone: 'Belum ade name lagi 🥲',
-  turnDone: 'Semue doh siap ✅',
-  spin: '🌀 Pusing',
-  spinFor: name => `🌀 Pusing la, ${name}!`,
-  lockNoNames: ['🔒 Bubuh name dulu weh', 'Taip name, tekang Enter'],
-  lockDone: ['🎉 Semue doh dapak warne!', 'Tamboh name lagi ke tekang ↺ Maing semule'],
-  lockNoLeft: n => ['😅 Warne doh habih', `Warne ade ${n} je — tekang ↺ Maing semule`],
-  lockNoColors: ['🎨 Rode kosong', 'Bubuh sekurang-kurangnye satu warne'],
-  emptyList: 'Dok ade name lagi 🥲<br>Taip name kak atah, tekang <b>Enter</b> 👆',
-  waiting: '👀 gilirang',
-  redoTitle: 'Pusing semule untuk name ning',
-  delTitle: 'Buang name ning',
-  chipOn: 'Klik nok buang dari rode',
-  chipOff: 'Klik nok bubuh balik kak rode',
-  chipUsed: name => `Doh kene ambik dengang ${name}`,
-  toastTypeName: 'Taip name dulu weh 😤',
-  toastDupOne: 'Name tu doh ade lah 🙄',
-  toastDupMany: n => `${n} name doh ade, dok tamboh`,
-  toastAdded: n => `${n} name doh masuk ✅`,
-  toastCopied: 'Doh saling! Paste kak WhatsApp 📲',
-  toastNeedName: 'Bubuh name dulu weh',
-  toastAllDone: 'Semue doh dapak warne 💅',
-  toastNoColor: 'Rode kosong, bubuh warne dulu',
-  toastNoLeft: 'Warne doh habih 😅',
-  toastTooMany: n => `Warne ade ${n} je — name lebih tu dok dapak warne 😬`,
-  toastFull: (max, over) => `Had ${max} name je weh 🙅 — ${over} name dok masuk`,
-  inputPlaceholder: 'Taip name, tekang Enter…',
-  inputFull: max => `Doh cukup ${max} name ✅`,
-  confirmReset: 'Kosongkang semue warne & maing semule? (Name kekal)',
-  confirmClear: 'Buang semue name ke? 😳',
+  freeLeft: n => [`🎨 `, `${n} warne`, ` lagi`],
+  allTaken: '🎉 Semue warne doh ade tuang',
+  lockLoading: ['⏳ Tengah amik senarai…', 'Kejap ye'],
+  lockOffline: ['📡 Dok leh sambung', 'Check internet — page cube sendiri'],
+  lockNoApi: ['⚙️ Database belum sambung', 'Letak URL Apps Script kak DEFAULT_API'],
+  lockDone: n => ['🎉 Semue doh dapak warne!', `${n} orang doh pusing`],
+  placeholder: 'Taip name mung…',
+  placeholderFull: 'Doh cukup 11 orang ✅',
+  spin: '🌀 Pusing!',
+  spinning: '🌀 Tengah pusing…',
+  empty: 'Belum ade sape-sape pusing lagi 🥲<br>Jadi orang <b>pertame</b>! 👈',
+  me: '👈 mung',
+  liveOn: '🟢 Live',
+  liveOff: '🔴 Offline',
+  hint: 'Senarai ning update sendiri 🔄',
   winKicker: name => `🎉 ${name} dapak warne`,
-  next: name => `Lepah ning: ${name} ➜`,
-  finished: 'Siap! Slay 💅',
+  existsKicker: name => `😉 ${name} doh pusing — warne die`,
+  closeWin: 'Slay! 💅',
+  closeExists: 'OK',
+  toastTypeName: 'Taip name dulu weh 😤',
+  toastFull: 'Doh cukup 11 orang 🙅',
+  toastExists: 'Name tu doh ade — kalau orang laing, tamboh initial (cth: Ali B) 😉',
+  existsSub: 'Kalau bukan mung, tamboh initial — cth: Ali B',
+  toastNoColors: 'Warne doh habih 😅',
+  toastNetwork: '📡 Internet ade masaloh — cube lagi 🙏',
+  toastBusy: 'Ramai sangat pusing serentak — cube lagi 🙏',
+  toastServer: 'Database ade masaloh — cube lagi kekgi 🙏',
+  toastCopied: 'Doh saling! Paste kak WhatsApp 📲',
+  toastCopyEmpty: 'Belum ade keputusang lagi',
   copyHeader: '🎁 Tuka Hadioh — Warne Tema',
   soundOn: 'Bunyi: on 🔊',
   soundOff: 'Bunyi: off 🔇'
@@ -270,9 +234,12 @@ const T = {
 const $ = s => document.querySelector(s);
 const TAU = Math.PI * 2;
 const POINTER = -Math.PI / 2;            // pointer at the top of the wheel
-const STORE = 'rodaWarna.v1';
 const FONT = '"Bricolage Grotesque",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif';
 const INK = '#111111';
+const params = new URLSearchParams(location.search);
+const API = params.get('api') || DEFAULT_API;
+const POLL_MS = Math.max(1500, +params.get('poll') || 12000);
+const LS_MINE = 'rodaWarna.mine', LS_SOUND = 'rodaWarna.sound';
 
 const rand = (() => {
   const c = window.crypto;
@@ -282,9 +249,10 @@ const rand = (() => {
   }
   return Math.random;
 })();
-const randInt = n => Math.floor(rand() * n);
 const mod = (a, m) => ((a % m) + m) % m;
 const ease = t => 1 - Math.pow(1 - t, 3);
+const cleanName = s => String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, 40);
+const sameName = (a, b) => cleanName(a).toLowerCase() === cleanName(b).toLowerCase();
 
 /* ================= colours: 11 warna Tema Tukar Hadiah ================= */
 const COLORS = [
@@ -301,10 +269,8 @@ const COLORS = [
   { key: 'gold',   name: 'Gold',   emoji: '✨', hex: '#D4AF37', gold: true }
 ];
 const BY_KEY = Object.fromEntries(COLORS.map(c => [c.key, c]));
-const MAX_NAMES = COLORS.length;                  // one colour each → 11 names max
+const WHEEL_ORDER = ['red', 'blue', 'brown', 'white', 'pink', 'green', 'yellow', 'purple', 'orange', 'black', 'gold'];  // look-alikes kept apart
 const GOLD_CSS = 'linear-gradient(135deg,#A9791C 0%,#F9E08B 38%,#E6C15A 58%,#B8892A 100%)';
-const SIMILAR = new Set(['red|pink','red|orange','orange|yellow','yellow|gold','orange|gold','brown|gold','brown|orange','pink|purple','black|brown']);
-const alike = (a, b) => SIMILAR.has(a + '|' + b) || SIMILAR.has(b + '|' + a);
 
 function hexToRgb(hex) { const n = parseInt(hex.slice(1), 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
 function inkFor(c) {
@@ -314,56 +280,47 @@ function inkFor(c) {
 }
 const swatch = c => c.gold ? GOLD_CSS : c.hex;
 
-function shuffledOrder() {
-  let best = null;
-  for (let tries = 0; tries < 400; tries++) {
-    const a = COLORS.map(c => c.key);
-    for (let i = a.length - 1; i > 0; i--) { const j = randInt(i + 1); [a[i], a[j]] = [a[j], a[i]]; }
-    let bad = 0;
-    for (let i = 0; i < a.length; i++) if (alike(a[i], a[(i + 1) % a.length])) bad++;
-    if (!best || bad < best.bad) best = { a, bad };
-    if (!bad) break;
-  }
-  return best.a;
-}
-
 /* ================= state ================= */
-const state = {
-  names: [],                                      // [{ name, color: key|null }]
-  order: shuffledOrder(),
-  enabled: Object.fromEntries(COLORS.map(c => [c.key, true])),
-  duration: 5,
-  sound: true
-};
-function load() {
-  try {
-    const d = JSON.parse(localStorage.getItem(STORE) || 'null');
-    if (!d) return;
-    if (Array.isArray(d.names)) state.names = d.names
-      .filter(x => x && typeof x.name === 'string' && x.name.trim())
-      .map(x => ({ name: x.name.trim().slice(0, 40), color: BY_KEY[x.color] ? x.color : null }))
-      .slice(0, MAX_NAMES);
-    const seen = new Set();
-    for (const n of state.names) {                 // older saves could repeat a colour — keep the first only
-      if (!n.color) continue;
-      if (seen.has(n.color)) n.color = null; else seen.add(n.color);
-    }
-    if (Array.isArray(d.order) && d.order.length === COLORS.length && d.order.every(k => BY_KEY[k])) state.order = d.order;
-    if (d.enabled) for (const c of COLORS) if (typeof d.enabled[c.key] === 'boolean') state.enabled[c.key] = d.enabled[c.key];
-    if (d.duration >= 2 && d.duration <= 12) state.duration = +d.duration;
-    if (typeof d.sound === 'boolean') state.sound = d.sound;
-  } catch (e) {}
+let picks = [];             // from the database: [{ name, color, time }]
+let MAX = 11;
+let loaded = false;         // got the list at least once
+let online = true;
+let busy = false;           // a spin is running
+let freshName = null;
+let sound = true;
+let mine = [];
+try { mine = JSON.parse(localStorage.getItem(LS_MINE) || '[]').filter(x => typeof x === 'string'); } catch (e) { mine = []; }
+try { sound = localStorage.getItem(LS_SOUND) !== 'off'; } catch (e) {}
+function rememberMine(name) {
+  if (!mine.some(m => sameName(m, name))) mine.push(cleanName(name));
+  try { localStorage.setItem(LS_MINE, JSON.stringify(mine.slice(-20))); } catch (e) {}
 }
-function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {} }
-load();
 
-const enabledCount = () => COLORS.filter(c => state.enabled[c.key]).length;
-const usedKeys = () => new Set(state.names.map(n => n.color).filter(Boolean));
-const turnIndex = () => state.names.findIndex(n => !n.color);
-function wheelItems() {                           // picked colours never come back until freed
-  const used = usedKeys();
-  return state.order.filter(k => state.enabled[k] && !used.has(k)).map(k => BY_KEY[k]);
+const takenKeys = (except) => new Set(picks.filter(p => p.color && p !== except).map(p => p.color));
+function wheelColors(except) {
+  const taken = takenKeys(except);
+  return WHEEL_ORDER.filter(k => !taken.has(k)).map(k => BY_KEY[k]);
 }
+function sanitizePicks(list) {
+  if (!Array.isArray(list)) return [];
+  return list.filter(p => p && typeof p.name === 'string' && cleanName(p.name))
+    .map(p => ({ name: cleanName(p.name), color: BY_KEY[p.color] ? p.color : null, time: String(p.time || '') }));
+}
+
+/* ================= database calls ================= */
+async function call(opts, ms) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const url = opts ? API : API + (API.includes('?') ? '&' : '?') + 't=' + Date.now();
+    const res = await fetch(url, Object.assign({ signal: ctrl.signal, cache: 'no-store', redirect: 'follow' }, opts || {}));
+    const data = await res.json();
+    if (!data || typeof data !== 'object') throw new Error('bad');
+    return data;
+  } finally { clearTimeout(timer); }
+}
+const apiList = () => call(null, 15000);
+const apiSpin = name => call({ method: 'POST', body: JSON.stringify({ action: 'spin', name }) }, 30000);   // text/plain → no CORS preflight
 
 /* ================= sound ================= */
 let actx = null;
@@ -375,7 +332,7 @@ function audio() {
   } catch (e) { return null; }
 }
 function playTick() {
-  if (!state.sound) return;
+  if (!sound) return;
   const a = audio(); if (!a) return;
   const t = a.currentTime, o = a.createOscillator(), g = a.createGain();
   o.type = 'square';
@@ -387,7 +344,7 @@ function playTick() {
   o.start(t); o.stop(t + 0.05);
 }
 function winSound() {
-  if (!state.sound) return;
+  if (!sound) return;
   const a = audio(); if (!a) return;
   [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
     const t = a.currentTime + i * 0.11, o = a.createOscillator(), g = a.createGain();
@@ -405,8 +362,12 @@ class Wheel {
   constructor(el) {
     this.canvas = el.querySelector('canvas');
     this.ctx = this.canvas.getContext('2d');
-    this.pointer = el.querySelector('.pointer');
+    this.pointer = $('#pointer');
+    this.items = wheelColors();
     this.rotation = rand() * TAU;
+    this.mode = 'idle';           // idle | free | land
+    this.v = 0;                   // current speed, rad/ms
+    this.vmax = 2.2 * TAU / 1000;
     this.size = 0; this.dpr = 1;
     const ro = () => this.resize();
     if ('ResizeObserver' in window) new ResizeObserver(ro).observe(this.canvas);
@@ -421,13 +382,13 @@ class Wheel {
     this.canvas.height = Math.round(w * this.dpr);
     this.draw();
   }
+  setItems(items) { this.items = items; this.lastSeg = this.segAt(); this.draw(); }
   draw() {
     if (!this.size) return;
-    const ctx = this.ctx, size = this.size;
+    const ctx = this.ctx, size = this.size, items = this.items;
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
     ctx.clearRect(0, 0, size, size);
     const c = size / 2, r = c - 6;
-    const items = wheelItems();
     if (!items.length) {
       ctx.beginPath(); ctx.arc(c, c, r, 0, TAU);
       ctx.fillStyle = '#efe6d3'; ctx.fill();
@@ -448,35 +409,69 @@ class Wheel {
       ctx.fill();
       if (n > 1) { ctx.lineWidth = 2.5; ctx.strokeStyle = INK; ctx.stroke(); }
     }
-    // no text on the wheel — colours only
     ctx.beginPath(); ctx.arc(c, c, r, 0, TAU);
     ctx.lineWidth = 6; ctx.strokeStyle = INK; ctx.stroke();
   }
-  segAt(n) { return Math.floor(mod(POINTER - this.rotation, TAU) / (TAU / n)) % n; }
-  flick() { const p = this.pointer; p.classList.remove('flick'); void p.offsetWidth; p.classList.add('flick'); }
-  spin(ms) {
+  segAt() { const n = this.items.length; return n ? Math.floor(mod(POINTER - this.rotation, TAU) / (TAU / n)) % n : -1; }
+  tickCheck() {
+    const s = this.segAt();
+    if (s !== this.lastSeg) {
+      this.lastSeg = s;
+      const p = this.pointer; p.classList.remove('flick'); void p.offsetWidth; p.classList.add('flick');
+      playTick();
+    }
+  }
+  // phase 1: spin freely while the database picks the colour
+  startFree() {
+    this.mode = 'free';
+    this.lastSeg = this.segAt();
+    let t0 = null, prev = null;
+    const step = now => {
+      if (this.mode !== 'free') return;
+      if (t0 === null) { t0 = now; prev = now; }
+      const dt = Math.min(50, now - prev); prev = now;
+      this.v = this.vmax * Math.min(1, (now - t0) / 500);
+      this.rotation += this.v * dt;
+      this.draw(); this.tickCheck();
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+  // phase 2: slow down smoothly and stop exactly on `key`
+  landOn(key, items) {
+    this.mode = 'land';
+    this.setItems(items);
+    const n = items.length, arc = TAU / n;
+    const idx = Math.max(0, items.findIndex(c => c.key === key));
+    const f = 0.15 + rand() * 0.7;                                   // inside the slice, never on a line
+    const target = mod(POINTER - (idx + f) * arc, TAU);
+    const v = Math.max(this.v, this.vmax * 0.6);
+    let D = mod(target - mod(this.rotation, TAU), TAU);
+    while (D < v * 4200 / 3 - Math.PI) D += TAU;                     // about 4 s of slowing down
+    const T = 3 * D / v;                                             // starts at today's speed — no jerk
+    return this.animate(D, T).then(() => items[this.segAt()]);
+  }
+  // error: just glide to a stop
+  coast() {
+    this.mode = 'land';
+    const v = this.v || 0;
+    if (!v) { this.mode = 'idle'; return Promise.resolve(); }
+    return this.animate(v * 1200 / 3, 1200);
+  }
+  animate(D, T) {
+    const start = this.rotation;
     return new Promise(resolve => {
-      const items = wheelItems(), n = items.length;
-      if (!n) return resolve(null);
-      const arc = TAU / n;
-      const idx = randInt(n);                                   // fair pick, decided up-front
-      const f = 0.12 + rand() * 0.76;                           // stop inside the slice, not on a line
-      const target = mod(POINTER - (idx + f) * arc, TAU);
-      const turns = Math.max(3, Math.round(ms / 1000 * 1.1)) + randInt(2);
-      const delta = mod(target - mod(this.rotation, TAU), TAU) + turns * TAU;
-      const start = this.rotation;
-      let t0 = null, last = this.segAt(n);
+      let t0 = null;
       const step = now => {
         if (t0 === null) t0 = now;
-        const t = Math.min(1, (now - t0) / ms);
-        this.rotation = start + delta * ease(t);
-        this.draw();
-        const s = this.segAt(n);
-        if (s !== last) { last = s; this.flick(); playTick(); }
+        const t = Math.min(1, (now - t0) / T);
+        this.rotation = start + D * ease(t);
+        this.draw(); this.tickCheck();
         if (t < 1) { requestAnimationFrame(step); return; }
         this.rotation = mod(this.rotation, TAU);
+        this.v = 0; this.mode = 'idle';
         this.draw();
-        resolve(items[this.segAt(n)]);
+        resolve();
       };
       requestAnimationFrame(step);
     });
@@ -485,14 +480,9 @@ class Wheel {
 
 /* ================= elements ================= */
 const wheel = new Wheel($('#wheelWrap'));
-const nameInput = $('#nameInput'), namesEl = $('#names');
-const spinBtn = $('#spinBtn'), hub = $('#hub'), lock = $('#lock');
+const nameInput = $('#nameInput'), spinBtn = $('#spinBtn'), picksEl = $('#picks'), lock = $('#lock');
 const modal = $('#modal'), closeBtn = $('#closeBtn');
 const soundBtn = $('#soundBtn'), fsBtn = $('#fsBtn');
-
-let busy = false;
-let freshIdx = -1;
-
 $('#marquee').textContent = T.marquee.repeat(6);
 
 /* ================= rendering ================= */
@@ -501,94 +491,10 @@ function toast(msg) {
   const el = $('#toast');
   el.textContent = msg; el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 1900);
-}
-async function copy(text, msg) {
-  try { await navigator.clipboard.writeText(text); }
-  catch (e) {
-    const ta = document.createElement('textarea');
-    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand('copy'); } catch (_) {}
-    ta.remove();
-  }
-  toast(msg);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
-function renderChips() {
-  const el = $('#chips'); el.innerHTML = '';
-  const used = usedKeys();
-  for (const k of state.order) {
-    const c = BY_KEY[k];
-    const b = document.createElement('button');
-    b.className = 'cchip' + (state.enabled[k] ? '' : ' off') + (used.has(k) ? ' used' : '');
-    b.dataset.lock = '';
-    b.title = used.has(k) ? T.chipUsed(state.names.find(n => n.color === k).name) : state.enabled[k] ? T.chipOn : T.chipOff;
-    const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = swatch(c);
-    b.append(dot, `${c.name} ${c.emoji}`);
-    b.onclick = () => {
-      if (busy) return;
-      state.enabled[k] = !state.enabled[k];
-      save(); renderChips(); wheel.draw(); updateTurn();
-    };
-    el.appendChild(b);
-  }
-  if (busy) el.querySelectorAll('button').forEach(b => { b.disabled = true; });
-}
-
-function renderNames() {
-  namesEl.innerHTML = '';
-  updateInputState();
-  $('#namesActions').classList.toggle('hidden', !state.names.length);
-  if (!state.names.length) {
-    namesEl.innerHTML = `<li class="empty">${T.emptyList}</li>`;
-    return;
-  }
-  const ti = turnIndex();
-  state.names.forEach((n, i) => {
-    const li = document.createElement('li');
-    li.className = 'nrow' + (i === ti ? ' is-turn' : '') + (i === freshIdx ? ' fresh' : '');
-    const no = document.createElement('span'); no.className = 'no'; no.textContent = (i + 1) + '.';
-    const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = n.name; nm.title = n.name;
-    const res = document.createElement('span');
-    if (n.color) {
-      const c = BY_KEY[n.color];
-      res.className = 'res';
-      res.style.background = swatch(c);
-      res.style.color = inkFor(c);
-      res.textContent = `${c.name} ${c.emoji}`;
-    } else if (i === ti) { res.className = 'res wait'; res.textContent = T.waiting; }
-    else { res.className = 'res none'; res.textContent = '—'; }
-    li.append(no, nm, res);
-    if (n.color) {
-      const redo = document.createElement('button');
-      redo.className = 'mini'; redo.textContent = '↺'; redo.title = T.redoTitle;
-      redo.disabled = busy;
-      redo.onclick = () => { if (busy) return; n.color = null; save(); renderAll(); };
-      li.append(redo);
-    }
-    const del = document.createElement('button');
-    del.className = 'mini'; del.textContent = '×'; del.title = T.delTitle;
-    del.disabled = busy;
-    del.onclick = () => { if (busy) return; state.names.splice(i, 1); save(); renderAll(); };
-    li.append(del);
-    namesEl.appendChild(li);
-  });
-  freshIdx = -1;
-  const t = namesEl.querySelector('.is-turn');
-  if (t && namesEl.scrollHeight > namesEl.clientHeight + 2) {   // scroll inside the list only — never jump the page
-    const lr = namesEl.getBoundingClientRect(), tr = t.getBoundingClientRect();
-    if (tr.top < lr.top) namesEl.scrollTop += tr.top - lr.top - 6;
-    else if (tr.bottom > lr.bottom) namesEl.scrollTop += tr.bottom - lr.bottom + 6;
-  }
-}
-
-function updateTurn() {
-  const ti = turnIndex(), items = wheelItems();
-  let msg = null;
-  if (!state.names.length) msg = T.lockNoNames;
-  else if (ti < 0) msg = T.lockDone;
-  else if (!items.length) msg = COLORS.some(c => state.enabled[c.key]) ? T.lockNoLeft(enabledCount()) : T.lockNoColors;
+function setLock(msg) {
   lock.textContent = '';
   if (msg) {
     const box = document.createElement('div');
@@ -597,144 +503,182 @@ function updateTurn() {
     lock.append(box);
   }
   lock.classList.toggle('hidden', !msg);
-  hub.style.visibility = msg ? 'hidden' : '';
+}
 
-  const can = !msg && !busy;
-  spinBtn.disabled = !can; hub.disabled = !can;
-  const label = $('#turnLabel');
-  label.textContent = '';
-  if (ti >= 0) {
-    const b = document.createElement('b'); b.textContent = state.names[ti].name;
-    label.append(T.turn + ' ', b);
-    spinBtn.textContent = T.spinFor(state.names[ti].name);
-  } else {
-    label.textContent = state.names.length ? T.turnDone : T.turnNone;
-    spinBtn.textContent = T.spin;
+function renderList() {
+  $('#count').textContent = `${picks.length}/${MAX}`;
+  const live = $('#live');
+  live.textContent = !API ? '⚙️' : !loaded && online ? '⏳' : online ? T.liveOn : T.liveOff;
+  live.classList.toggle('off', loaded && !online);
+  picksEl.innerHTML = '';
+  if (!picks.length) {
+    picksEl.innerHTML = `<li class="empty">${T.empty}</li>`;
+    return;
   }
+  picks.forEach((p, i) => {
+    const isMine = mine.some(m => sameName(m, p.name));
+    const li = document.createElement('li');
+    li.className = 'prow' + (isMine ? ' mine' : '') + (freshName && sameName(freshName, p.name) ? ' fresh' : '');
+    const no = document.createElement('span'); no.className = 'no'; no.textContent = (i + 1) + '.';
+    const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = p.name; nm.title = p.name;
+    li.append(no, nm);
+    if (isMine) { const me = document.createElement('span'); me.className = 'me'; me.textContent = T.me; li.append(me); }
+    const res = document.createElement('span');
+    if (p.color) {
+      const c = BY_KEY[p.color];
+      res.className = 'res'; res.style.background = swatch(c); res.style.color = inkFor(c);
+      res.textContent = `${c.name} ${c.emoji}`;
+    } else { res.className = 'res none'; res.textContent = '—'; }
+    li.append(res);
+    picksEl.appendChild(li);
+  });
+  freshName = null;
 }
 
-function renderAll() { renderNames(); renderChips(); wheel.draw(); updateTurn(); }
+function renderWheel() {
+  const free = wheelColors();
+  const full = picks.length >= MAX || !free.length;
+  if (!busy) wheel.setItems(free);
 
-function setBusy(b) {
-  busy = b;
-  document.querySelectorAll('[data-lock]').forEach(el => { el.disabled = b; });
-  namesEl.querySelectorAll('.mini').forEach(el => { el.disabled = b; });
-  updateInputState();
-  updateTurn();
+  const status = $('#status');
+  status.textContent = '';
+  if (loaded && !full) {
+    const [a, b, c] = T.freeLeft(free.length);
+    const strong = document.createElement('b'); strong.textContent = b;
+    status.append(a, strong, c);
+  } else if (loaded) status.textContent = T.allTaken;
+
+  if (busy) setLock(null);
+  else if (!API) setLock(T.lockNoApi);
+  else if (!loaded) setLock(online ? T.lockLoading : T.lockOffline);
+  else if (full) setLock(T.lockDone(picks.length));
+  else setLock(null);
+
+  const canType = !busy && loaded && !full;
+  nameInput.disabled = !canType;
+  spinBtn.disabled = !canType;
+  nameInput.placeholder = loaded && full ? T.placeholderFull : T.placeholder;
+  spinBtn.textContent = busy ? T.spinning : T.spin;
 }
 
-function updateInputState() {                       // name box closes at 11 names
-  const full = state.names.length >= MAX_NAMES;
-  nameInput.disabled = busy || full;
-  $('#addBtn').disabled = busy || full;
-  nameInput.placeholder = full ? T.inputFull(MAX_NAMES) : T.inputPlaceholder;
-  $('#nameCount').textContent = `${state.names.length}/${MAX_NAMES}`;
-}
+function render() { renderList(); renderWheel(); }
 
-/* ================= names ================= */
-function addNames(list) {
-  let added = 0, dup = 0, over = 0;
-  for (const raw of list) {
-    const name = raw.trim().slice(0, 40);
-    if (!name) continue;
-    if (state.names.some(n => n.name.toLowerCase() === name.toLowerCase())) { dup++; continue; }
-    if (state.names.length >= MAX_NAMES) { over++; continue; }
-    state.names.push({ name, color: null });
-    freshIdx = state.names.length - 1;
-    added++;
+/* ================= load + live updates ================= */
+let inFlight = false;
+async function refresh() {
+  if (!API || inFlight || busy || !modal.classList.contains('hidden')) return;   // never reshuffle the wheel under an open popup
+  inFlight = true;
+  try {
+    const r = await apiList();
+    if (busy) return;                       // a spin started meanwhile — its own answer wins
+    if (r.ok) {
+      picks = sanitizePicks(r.picks); if (r.max > 0) MAX = r.max;
+      loaded = true; online = true;
+    } else online = false;
+  } catch (e) {
+    online = false;
+  } finally {
+    inFlight = false;
   }
-  if (added) { save(); renderAll(); }
-  if (over) toast(T.toastFull(MAX_NAMES, over));
-  else if (dup) toast(dup === 1 ? T.toastDupOne : T.toastDupMany(dup));
-  else if (added && state.names.length > enabledCount()) toast(T.toastTooMany(enabledCount()));
-  return { added, dup, over };
+  if (!busy) render();
 }
-function addFromInput() {
-  if (busy) return;
-  const v = nameInput.value;
-  if (!v.trim()) { toast(T.toastTypeName); nameInput.focus(); return; }
-  addNames([v]);
-  nameInput.value = '';
-  if (!nameInput.disabled) nameInput.focus();
-}
-nameInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { e.preventDefault(); addFromInput(); }
-});
-nameInput.addEventListener('paste', e => {
-  const text = (e.clipboardData || window.clipboardData).getData('text');
-  if (/[\r\n\t]/.test(text)) {                       // pasted a column from Excel / a list
-    e.preventDefault();
-    const r = addNames(text.split(/[\r\n\t]+/));
-    if (r.added && !r.over && !r.dup && state.names.length <= enabledCount()) toast(T.toastAdded(r.added));
-  }
-});
-$('#addBtn').onclick = addFromInput;
-
-$('#copyBtn').onclick = () => {
-  const lines = state.names.map((n, i) => `${i + 1}. ${n.name} — ${n.color ? BY_KEY[n.color].name + ' ' + BY_KEY[n.color].emoji : '-'}`);
-  copy([T.copyHeader, '', ...lines].join('\n'), T.toastCopied);
-};
-$('#resetBtn').onclick = () => {
-  if (!state.names.some(n => n.color)) return;
-  if (!confirm(T.confirmReset)) return;
-  state.names.forEach(n => { n.color = null; });
-  save(); renderAll();
-};
-$('#clearBtn').onclick = () => {
-  if (!confirm(T.confirmClear)) return;
-  state.names = [];
-  save(); renderAll(); nameInput.focus();
-};
-
-/* ================= colour settings ================= */
-$('#shuffleColorsBtn').onclick = () => { state.order = shuffledOrder(); save(); renderChips(); wheel.draw(); };
-$('#allColorsBtn').onclick = () => { COLORS.forEach(c => { state.enabled[c.key] = true; }); save(); renderChips(); wheel.draw(); updateTurn(); };
-const durInput = $('#duration');
-durInput.oninput = () => { state.duration = +durInput.value; $('#durLabel').textContent = state.duration; save(); };
+setInterval(() => { if (document.visibilityState === 'visible') refresh(); }, POLL_MS);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refresh(); });
+window.addEventListener('online', refresh);
 
 /* ================= spin ================= */
-function spin() {
-  if (busy || !modal.classList.contains('hidden')) return;
-  const ti = turnIndex();
-  if (!state.names.length) { toast(T.toastNeedName); nameInput.focus(); return; }
-  if (ti < 0) { toast(T.toastAllDone); return; }
-  if (!wheelItems().length) { toast(COLORS.some(c => state.enabled[c.key]) ? T.toastNoLeft : T.toastNoColor); return; }
-  audio();
-  setBusy(true);
-  wheel.spin(state.duration * 1000).then(c => {
-    state.names[ti].color = c.key;
-    freshIdx = ti;
-    save();
-    setBusy(false);
-    renderNames(); renderChips(); updateTurn();
-    winSound();
-    confetti(c.gold ? ['#F9E08B', '#E6C15A', '#B8892A', '#111111', '#FF5FA2'] : [c.hex, c.hex, c.hex, '#111111', '#C8FF4D', '#FF5FA2']);
-    showModal(state.names[ti].name, c);
-  });
-}
-spinBtn.onclick = spin;
-hub.onclick = spin;
-$('#wheelWrap canvas').addEventListener('click', spin);
+async function spin() {
+  if (busy || !loaded || !modal.classList.contains('hidden')) return;
+  const name = cleanName(nameInput.value);
+  if (!name) { toast(T.toastTypeName); nameInput.focus(); return; }
+  const already = picks.find(p => sameName(p.name, name));
+  if (already && already.color) { showResult(already, true); return; }
+  if (already) { toast(T.toastExists); return; }
+  if (picks.length >= MAX) { toast(T.toastFull); return; }
+  if (!wheelColors().length) { toast(T.toastNoColors); return; }
 
-/* ================= modal ================= */
-function showModal(name, c) {
+  audio();
+  busy = true;
+  nameInput.blur();
+  render();
+  wheel.startFree();
+
+  let r;
+  try { r = await apiSpin(name); } catch (e) { r = { ok: false, error: 'network' }; }
+  if (Array.isArray(r.picks)) { picks = sanitizePicks(r.picks); online = true; }
+  if (r.max > 0) MAX = r.max;
+
+  if (r.ok && r.pick && BY_KEY[r.pick.color]) {
+    const pick = picks.find(p => sameName(p.name, r.pick.name)) || { name: cleanName(r.pick.name), color: r.pick.color };
+    await wheel.landOn(pick.color, wheelColors(pick));          // wheel still shows this colour until the popup closes
+    rememberMine(pick.name);
+    freshName = pick.name;
+    nameInput.value = '';
+    busy = false;
+    renderList();
+    renderWheelControlsOnly();
+    winSound();
+    const c = BY_KEY[pick.color];
+    confetti(c.gold ? ['#F9E08B', '#E6C15A', '#B8892A', '#111111', '#FF5FA2'] : [c.hex, c.hex, c.hex, '#111111', '#C8FF4D', '#FF5FA2']);
+    showResult(pick, false);
+    return;
+  }
+
+  await wheel.coast();
+  busy = false;
+  if (r.error === 'network') online = false;
+  render();
+  if (r.error === 'exists' && r.pick && BY_KEY[r.pick.color]) showResult(r.pick, true);
+  else toast({ exists: T.toastExists, full: T.toastFull, no_colors: T.toastNoColors, no_name: T.toastTypeName, busy: T.toastBusy, network: T.toastNetwork }[r.error] || T.toastServer);
+}
+function renderWheelControlsOnly() {          // after landing: keep the colour on the wheel, just unlock the form
+  const keep = wheel.items;
+  renderWheel();
+  wheel.setItems(keep);
+  setLock(null);
+}
+$('#spinForm').addEventListener('submit', e => { e.preventDefault(); spin(); });
+
+/* ================= result popup ================= */
+function showResult(pick, existed) {
+  const c = BY_KEY[pick.color];
   const top = $('#modalTop');
   top.style.background = swatch(c);
   top.style.color = inkFor(c);
-  $('#winKicker').textContent = T.winKicker(name);
+  $('#winKicker').textContent = existed ? T.existsKicker(pick.name) : T.winKicker(pick.name);
   $('#winTitle').textContent = `${c.name} ${c.emoji}`;
-  const next = turnIndex();
-  closeBtn.textContent = next >= 0 ? T.next(state.names[next].name) : T.finished;
+  $('#winSub').textContent = existed ? T.existsSub : '';
+  $('#winSub').classList.toggle('hidden', !existed);
+  closeBtn.textContent = existed ? T.closeExists : T.closeWin;
   modal.classList.remove('hidden');
   closeBtn.focus();
 }
 function closeModal() {
+  if (modal.classList.contains('hidden')) return;
   modal.classList.add('hidden');
-  wheel.draw();                      // the picked colour leaves the wheel now
-  updateTurn();
+  render();                                   // the picked colour leaves the wheel now
+  refresh();
 }
 closeBtn.onclick = closeModal;
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+
+/* ================= copy ================= */
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); } catch (_) {}
+    ta.remove();
+  }
+}
+$('#copyBtn').onclick = async () => {
+  if (!picks.length) { toast(T.toastCopyEmpty); return; }
+  const lines = picks.map((p, i) => `${i + 1}. ${p.name} — ${p.color ? BY_KEY[p.color].name + ' ' + BY_KEY[p.color].emoji : '-'}`);
+  await copy([T.copyHeader, '', ...lines].join('\n'));
+  toast(T.toastCopied);
+};
 
 /* ================= confetti ================= */
 const cf = $('#confetti'), cfx = cf.getContext('2d');
@@ -753,7 +697,7 @@ function confetti(colors) {
       w: 7 + rand() * 6, h: 10 + rand() * 8,
       rot: rand() * TAU, vr: (rand() - 0.5) * 0.35,
       flip: rand() * TAU, vf: 0.08 + rand() * 0.15,
-      c: colors[randInt(colors.length)]
+      c: colors[Math.floor(rand() * colors.length)]
     });
   }
   const t0 = performance.now();
@@ -780,11 +724,13 @@ function confetti(colors) {
 
 /* ================= misc ================= */
 function renderSound() {
-  soundBtn.textContent = state.sound ? '🔊' : '🔇';
-  soundBtn.title = state.sound ? T.soundOn : T.soundOff;
+  soundBtn.textContent = sound ? '🔊' : '🔇';
+  soundBtn.title = sound ? T.soundOn : T.soundOff;
 }
-soundBtn.onclick = () => { state.sound = !state.sound; renderSound(); save(); };
-
+soundBtn.onclick = () => {
+  sound = !sound; renderSound();
+  try { localStorage.setItem(LS_SOUND, sound ? 'on' : 'off'); } catch (e) {}
+};
 fsBtn.onclick = () => {
   if (document.fullscreenElement) { document.exitFullscreen(); return; }
   const el = document.documentElement;
@@ -794,24 +740,16 @@ fsBtn.onclick = () => {
 document.addEventListener('fullscreenchange', () => {
   document.body.classList.toggle('presenting', !!document.fullscreenElement);
 });
-
 document.addEventListener('keydown', e => {
-  if (!modal.classList.contains('hidden')) {
-    if (e.key === 'Escape') { e.preventDefault(); closeModal(); }
-    return;
-  }
-  const tag = document.activeElement && document.activeElement.tagName;
-  if (tag === 'INPUT') return;                     // typing a name: Enter only adds it
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); spin(); return; }
-  if (e.code === 'Space' && !/^(INPUT|TEXTAREA|BUTTON|SELECT)$/.test(tag)) { e.preventDefault(); spin(); }
+  if (!modal.classList.contains('hidden') && e.key === 'Escape') { e.preventDefault(); closeModal(); }
 });
 
 /* ================= init ================= */
-durInput.value = state.duration; $('#durLabel').textContent = state.duration;
 renderSound();
-renderAll();
+render();
 wheel.resize();
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => wheel.draw());   // redraw once the web font arrives
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => wheel.draw());
+refresh();
 })();
 </script>
 </body>
